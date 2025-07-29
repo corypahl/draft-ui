@@ -1,7 +1,7 @@
 import React from 'react';
 import './TeamRoster.css';
 
-const TeamRoster = ({ selectedTeam, draftedPlayers }) => {
+const TeamRoster = ({ selectedTeam, draftedPlayers, currentLeague }) => {
   const getPositionCount = (position) => {
     return draftedPlayers.filter(player => player.position === position).length;
   };
@@ -23,6 +23,9 @@ const TeamRoster = ({ selectedTeam, draftedPlayers }) => {
       <div className="team-roster">
         <div className="roster-header">
           <h2>Team Roster</h2>
+          <div className="league-info">
+            <span className="league-name">{currentLeague}</span>
+          </div>
         </div>
         <div className="no-team-selected">
           <p>Select a team from the draft board to view their roster.</p>
@@ -37,6 +40,12 @@ const TeamRoster = ({ selectedTeam, draftedPlayers }) => {
         <h2>{selectedTeam.name}</h2>
         <div className="team-stats">
           <span>{draftedPlayers.length} players drafted</span>
+          {selectedTeam.draftPosition && (
+            <span className="draft-position">• Pick #{selectedTeam.draftPosition}</span>
+          )}
+        </div>
+        <div className="league-info">
+          <span className="league-name">{currentLeague}</span>
         </div>
       </div>
 
@@ -86,6 +95,9 @@ const TeamRoster = ({ selectedTeam, draftedPlayers }) => {
                     </span>
                     <span className="player-team">{player.team}</span>
                     <span className="draft-round">Round {player.draftRound}</span>
+                    {player.pickNumber && (
+                      <span className="pick-number">Pick #{player.pickNumber}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -108,6 +120,12 @@ const TeamRoster = ({ selectedTeam, draftedPlayers }) => {
             {getPositionCount('RB') < 2 ? 'RB' : 
              getPositionCount('WR') < 2 ? 'WR' : 
              getPositionCount('QB') < 1 ? 'QB' : 'Depth'}
+          </span>
+        </div>
+        <div className="analysis-item">
+          <span className="analysis-label">Total Value:</span>
+          <span className="analysis-value">
+            {draftedPlayers.reduce((sum, player) => sum + (player.rank || 999), 0).toLocaleString()}
           </span>
         </div>
       </div>

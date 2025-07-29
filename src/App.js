@@ -1,18 +1,38 @@
 import React, { useState } from 'react';
 import './App.css';
+import LeagueSelector from './components/LeagueSelector';
 import DraftBoard from './components/DraftBoard';
 import PlayerList from './components/PlayerList';
-import TeamRoster from './components/TeamRoster';
 
 function App() {
+  const [currentLeague, setCurrentLeague] = useState('FanDuel');
   const [draftState, setDraftState] = useState({
     currentPick: 1,
     teams: [],
     draftedPlayers: [],
-    availablePlayers: []
+    availablePlayers: [],
+    draftStatus: 'pre_draft',
+    totalRounds: 0,
+    leagueName: ''
   });
 
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const handleLeagueChange = (leagueId) => {
+    setCurrentLeague(leagueId);
+    // Reset draft state when switching leagues
+    setDraftState({
+      currentPick: 1,
+      teams: [],
+      draftedPlayers: [],
+      availablePlayers: [],
+      draftStatus: 'pre_draft',
+      totalRounds: 0,
+      leagueName: ''
+    });
+  };
+
+  const handleDraftDataUpdate = (newDraftData) => {
+    setDraftState(newDraftData);
+  };
 
   return (
     <div className="App">
@@ -20,32 +40,25 @@ function App() {
         <h1>🏈 Fantasy Football Draft Assistant</h1>
         <p>Your ultimate tool for dominating your fantasy football draft</p>
       </header>
-      
+
       <main className="App-main">
+        <LeagueSelector
+          onLeagueChange={handleLeagueChange}
+          onDraftDataUpdate={handleDraftDataUpdate}
+        />
+
         <div className="draft-container">
           <div className="draft-left-panel">
-            <DraftBoard 
+            <DraftBoard
               draftState={draftState}
               setDraftState={setDraftState}
-              selectedTeam={selectedTeam}
-              setSelectedTeam={setSelectedTeam}
+              currentLeague={currentLeague}
             />
           </div>
-          
+
           <div className="draft-center-panel">
-            <PlayerList 
-              availablePlayers={draftState.availablePlayers}
-              onPlayerSelect={(player) => {
-                // Handle player selection logic
-                console.log('Player selected:', player);
-              }}
-            />
-          </div>
-          
-          <div className="draft-right-panel">
-            <TeamRoster 
-              selectedTeam={selectedTeam}
-              draftedPlayers={draftState.draftedPlayers.filter(p => p.teamId === selectedTeam?.id)}
+            <PlayerList
+              draftState={draftState}
             />
           </div>
         </div>

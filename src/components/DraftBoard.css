@@ -3,25 +3,50 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--bg-card);
 }
 
 .draft-board-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.draft-board-header h2 {
+.header-info h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.league-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.league-name {
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.draft-name {
+  color: var(--text-secondary);
+}
+
+.season {
+  color: var(--accent-green);
+  font-weight: 500;
 }
 
 .add-team-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
   color: white;
   padding: 8px 16px;
   border-radius: 6px;
@@ -32,11 +57,11 @@
 
 .add-team-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
 }
 
 .current-pick {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-blue) 100%);
   color: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -51,9 +76,28 @@
 }
 
 .pick-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.current-team {
   font-size: 1.1rem;
   font-weight: 500;
   opacity: 0.9;
+}
+
+.round-info {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.picks-remaining {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .teams-list {
@@ -65,31 +109,28 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .team-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 1rem;
   margin-bottom: 0.5rem;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-radius: 8px;
-  cursor: pointer;
   transition: all 0.2s ease;
-  border: 2px solid transparent;
+  border: 1px solid var(--border-color);
 }
 
 .team-item:hover {
-  background: #e9ecef;
-  transform: translateX(4px);
+  background: var(--bg-tertiary);
+  border-color: var(--accent-blue);
 }
 
-.team-item.selected {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-color: #667eea;
+.team-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .team-name {
@@ -97,17 +138,39 @@
   font-size: 1rem;
 }
 
-.team-picks {
-  font-size: 0.9rem;
+.draft-position {
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.team-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
   opacity: 0.7;
+}
+
+.team-picks {
   background: rgba(255, 255, 255, 0.2);
   padding: 2px 8px;
   border-radius: 12px;
 }
 
+.last-pick {
+  font-style: italic;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .no-teams {
   text-align: center;
-  color: #6c757d;
+  color: var(--text-muted);
   font-style: italic;
   padding: 2rem;
 }
@@ -139,15 +202,21 @@
   color: white;
 }
 
-.control-btn:hover {
+.control-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-.control-btn:not(.primary):hover {
+.control-btn:not(.primary):hover:not(:disabled) {
   background: #e9ecef;
   border-color: #adb5bd;
 }
 
-.control-btn.primary:hover {
+.control-btn.primary:hover:not(:disabled) {
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 } 

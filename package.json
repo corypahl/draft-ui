@@ -11,7 +11,6 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "homepage": "https://cory.github.io/draft-ui",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
