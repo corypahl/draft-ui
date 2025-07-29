@@ -1,0 +1,118 @@
+import React from 'react';
+import './TeamRoster.css';
+
+const TeamRoster = ({ selectedTeam, draftedPlayers }) => {
+  const getPositionCount = (position) => {
+    return draftedPlayers.filter(player => player.position === position).length;
+  };
+
+  const getPositionColor = (position) => {
+    switch (position) {
+      case 'QB': return '#ff6b6b';
+      case 'RB': return '#4ecdc4';
+      case 'WR': return '#45b7d1';
+      case 'TE': return '#96ceb4';
+      case 'K': return '#feca57';
+      case 'DEF': return '#ff9ff3';
+      default: return '#ddd';
+    }
+  };
+
+  if (!selectedTeam) {
+    return (
+      <div className="team-roster">
+        <div className="roster-header">
+          <h2>Team Roster</h2>
+        </div>
+        <div className="no-team-selected">
+          <p>Select a team from the draft board to view their roster.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="team-roster">
+      <div className="roster-header">
+        <h2>{selectedTeam.name}</h2>
+        <div className="team-stats">
+          <span>{draftedPlayers.length} players drafted</span>
+        </div>
+      </div>
+
+      <div className="position-summary">
+        <div className="position-count">
+          <span className="position-label">QB:</span>
+          <span className="position-number">{getPositionCount('QB')}</span>
+        </div>
+        <div className="position-count">
+          <span className="position-label">RB:</span>
+          <span className="position-number">{getPositionCount('RB')}</span>
+        </div>
+        <div className="position-count">
+          <span className="position-label">WR:</span>
+          <span className="position-number">{getPositionCount('WR')}</span>
+        </div>
+        <div className="position-count">
+          <span className="position-label">TE:</span>
+          <span className="position-number">{getPositionCount('TE')}</span>
+        </div>
+        <div className="position-count">
+          <span className="position-label">K:</span>
+          <span className="position-number">{getPositionCount('K')}</span>
+        </div>
+        <div className="position-count">
+          <span className="position-label">DEF:</span>
+          <span className="position-number">{getPositionCount('DEF')}</span>
+        </div>
+      </div>
+
+      <div className="roster-players">
+        <h3>Drafted Players</h3>
+        {draftedPlayers.length === 0 ? (
+          <p className="no-players">No players drafted yet.</p>
+        ) : (
+          <div className="players-list">
+            {draftedPlayers.map((player, index) => (
+              <div key={player.id} className="roster-player">
+                <div className="player-info">
+                  <div className="player-name">{player.name}</div>
+                  <div className="player-details">
+                    <span 
+                      className="player-position"
+                      style={{ backgroundColor: getPositionColor(player.position) }}
+                    >
+                      {player.position}
+                    </span>
+                    <span className="player-team">{player.team}</span>
+                    <span className="draft-round">Round {player.draftRound}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="roster-analysis">
+        <h3>Roster Analysis</h3>
+        <div className="analysis-item">
+          <span className="analysis-label">Strength:</span>
+          <span className="analysis-value">
+            {draftedPlayers.length > 0 ? 'Building...' : 'No players yet'}
+          </span>
+        </div>
+        <div className="analysis-item">
+          <span className="analysis-label">Needs:</span>
+          <span className="analysis-value">
+            {getPositionCount('RB') < 2 ? 'RB' : 
+             getPositionCount('WR') < 2 ? 'WR' : 
+             getPositionCount('QB') < 1 ? 'QB' : 'Depth'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TeamRoster; 
