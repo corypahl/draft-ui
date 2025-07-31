@@ -4,12 +4,13 @@ A modern, responsive React web application designed to help you dominate your fa
 
 ## ✨ Features
 
-- **Draft Board Management**: Track draft order and current picks
-- **Player Database**: Browse available players with rankings and tiers
-- **Team Rosters**: View and manage team compositions
-- **Real-time Updates**: Live draft progress tracking
+- **Advanced Player List**: Comprehensive player database with rankings, tiers, and detailed statistics
+- **Depth Chart Integration**: Team depth charts accessible via interactive tooltips
+- **Injury Tracking**: Visual injury indicators with status information
+- **Rookie Identification**: Special badges for rookie players with draft round information
+- **Real-time Search & Filtering**: Search players by name or team, filter by position
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-- **Modern UI**: Beautiful, intuitive interface with smooth animations
+- **Modern UI**: Beautiful, intuitive interface with smooth animations and dark theme
 
 ## 🚀 Live Demo
 
@@ -17,8 +18,9 @@ Visit the live application: [Fantasy Football Draft Assistant](https://cory.gith
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18
-- **Styling**: CSS3 with modern design patterns
+- **Frontend**: React 18 with Hooks
+- **Styling**: CSS3 with modern design patterns and CSS Grid/Flexbox
+- **State Management**: React useState, useMemo, useEffect, useRef
 - **Deployment**: GitHub Pages
 - **CI/CD**: GitHub Actions
 
@@ -68,31 +70,40 @@ npm run deploy
 
 ## 🎯 How to Use
 
-1. **Add Teams**: Click the "+ Add Team" button to add teams to your draft
-2. **Browse Players**: Use the player list to view available players with rankings and tiers
-3. **Select Players**: Click "Draft" to add players to teams
-4. **Track Progress**: Monitor draft progress and team rosters in real-time
-5. **Analyze Rosters**: View position breakdowns and roster analysis
+1. **Browse Players**: View the comprehensive player list with rankings, tiers, and statistics
+2. **Search & Filter**: Use the search bar to find players by name or team, or filter by position
+3. **View Depth Charts**: Click team buttons below the search bar to view team depth charts
+4. **Track Injuries**: Look for crutch icons (🩼) next to injured players with status information
+5. **Identify Rookies**: Purple "R1", "R2", etc. badges indicate rookie players and their draft round
+6. **Analyze Data**: View detailed player statistics including ADP, projections, upside, risk, and more
 
 ## 📱 Features in Detail
 
-### Draft Board
-- Track current pick number
-- View team order and selections
-- Navigate between picks
-- Add/remove teams dynamically
-
 ### Player List
-- Search players by name or team
-- Filter by position (QB, RB, WR, TE, K, DEF)
-- View player rankings and tiers
-- Color-coded tier system for easy identification
+- **Comprehensive Data**: View player rankings, tiers, ADP, projections, upside, risk, boom/bust potential
+- **Search & Filter**: Search by player name or team, filter by position (QB, RB, WR, TE, K, DEF)
+- **Color-coded System**: Position-based color coding for easy identification
+- **Tier Organization**: Players organized by tiers for strategic drafting
 
-### Team Roster
-- View drafted players by team
-- Position breakdown and analysis
-- Roster strength indicators
-- Draft round tracking
+### Depth Chart Tooltip
+- **Team Buttons**: Interactive buttons for each NFL team below the search bar
+- **Depth Chart Display**: 4-column layout showing QB, RB, WR, TE depth charts
+- **Lazy Loading**: Depth charts load efficiently after initial page load
+- **Responsive Design**: Adapts to different screen sizes with optimized layouts
+
+### Player Information Display
+- **Injury Tracking**: Crutch icon (🩼) with inline injury status for injured players
+- **Rookie Badges**: Purple badges showing draft round (R1, R2, etc.) for rookie players
+- **Two-Row Data Layout**: 
+  - Row 1: ADP, Projected Points, Upside, Risk
+  - Row 2: Previous Rank, Previous Points, Boom, Bust
+- **College Information**: College details displayed for rookie players
+
+### Visual Enhancements
+- **Dark Theme**: Modern dark interface for reduced eye strain
+- **Hover Effects**: Smooth transitions and hover states throughout
+- **Responsive Grid**: Adaptive layouts for desktop, tablet, and mobile
+- **Professional Typography**: Clean, readable fonts with proper hierarchy
 
 ## 🔧 Configuration
 
@@ -103,9 +114,27 @@ No environment variables are required for basic functionality. The application u
 ### Customization
 
 You can customize the application by:
-- Modifying the sample player data in `src/components/PlayerList.js`
+- Modifying the player data structure in `src/services/playerDataService.js`
 - Adjusting the color scheme in the CSS files
 - Adding new features to the components
+- Customizing depth chart display options
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/
+│   ├── PlayerList.js          # Main player list component
+│   ├── PlayerList.css         # Player list styling
+│   ├── DepthChartTooltip.js   # Depth chart tooltip component
+│   ├── DepthChartTooltip.css  # Tooltip styling
+│   ├── LeagueSelector.js      # League selection component
+│   └── LeagueSelector.css     # League selector styling
+├── services/
+│   └── playerDataService.js   # Data fetching and processing
+├── App.js                     # Main application component
+└── App.css                    # Global application styling
+```
 
 ## 🤝 Contributing
 
@@ -124,6 +153,7 @@ This project is open source and available under the [MIT License](LICENSE).
 - Built with React and modern web technologies
 - Deployed on GitHub Pages
 - Icons and emojis for enhanced user experience
+- Depth chart data integration for comprehensive team analysis
 
 ## 📞 Support
 
