@@ -174,6 +174,21 @@
 .team-name {
   font-weight: 500;
   font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.team-name:hover {
+  color: #ffd700;
+}
+
+.team-name-text {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.team-name-text:hover {
+  color: #ffd700;
 }
 
 .draft-position {

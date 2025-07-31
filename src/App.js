@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
 import LeagueSelector from './components/LeagueSelector';
-import DraftBoard from './components/DraftBoard';
 import PlayerList from './components/PlayerList';
 
 function App() {
@@ -50,20 +49,10 @@ function App() {
         />
 
         <div className="draft-container">
-          <div className="draft-left-panel">
-            <DraftBoard
-              draftState={draftState}
-              setDraftState={setDraftState}
-              currentLeague={currentLeague}
-            />
-          </div>
-
-          <div className="draft-center-panel">
-            <PlayerList
-              draftState={draftState}
-              currentLeague={currentLeague}
-            />
-          </div>
+          <PlayerList
+            draftState={draftState}
+            currentLeague={currentLeague}
+          />
         </div>
       </main>
     </div>

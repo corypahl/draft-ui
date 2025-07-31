@@ -37,7 +37,9 @@ const TeamRoster = ({ selectedTeam, draftedPlayers, currentLeague }) => {
   return (
     <div className="team-roster">
       <div className="roster-header">
-        <h2>{selectedTeam.name}</h2>
+        <h2>
+          {selectedTeam.name}
+        </h2>
         <div className="team-stats">
           <span>{draftedPlayers.length} players drafted</span>
           {selectedTeam.draftPosition && (

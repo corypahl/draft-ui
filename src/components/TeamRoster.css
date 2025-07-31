@@ -19,6 +19,15 @@
   margin-bottom: 0.5rem;
 }
 
+.team-name-text {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.team-name-text:hover {
+  color: var(--accent-blue);
+}
+
 .team-stats {
   font-size: 0.9rem;
   color: var(--text-secondary);
