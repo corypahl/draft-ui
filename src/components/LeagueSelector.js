@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './LeagueSelector.css';
 
 const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
@@ -6,12 +6,47 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
   const [draftId, setDraftId] = useState('1256013847173550080'); // Default to example draft ID
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [refreshInterval, setRefreshInterval] = useState(5); // Default 5 seconds
+  const [lastRefresh, setLastRefresh] = useState(null);
+  const intervalRef = useRef(null);
 
   const leagues = [
     { id: 'FanDuel', name: 'FanDuel' },
     { id: 'Jackson', name: 'Jackson' },
     { id: 'GVSU', name: 'GVSU' }
   ];
+
+  // Handle auto-refresh functionality
+  useEffect(() => {
+    if (autoRefresh && draftId.trim()) {
+      // Clear any existing interval
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      
+      // Set up new interval
+      intervalRef.current = setInterval(() => {
+        fetchDraftData();
+      }, refreshInterval * 1000);
+      
+      console.log(`Auto-refresh enabled: ${refreshInterval} seconds`);
+    } else {
+      // Clear interval if auto-refresh is disabled
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        console.log('Auto-refresh disabled');
+      }
+    }
+
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [autoRefresh, refreshInterval, draftId]);
 
   const handleLeagueChange = (leagueId) => {
     setSelectedLeague(leagueId);
@@ -22,6 +57,17 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
   const handleDraftIdChange = (e) => {
     setDraftId(e.target.value);
     setError('');
+  };
+
+  const handleAutoRefreshToggle = () => {
+    setAutoRefresh(!autoRefresh);
+  };
+
+  const handleRefreshIntervalChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (value >= 1 && value <= 300) {
+      setRefreshInterval(value);
+    }
   };
 
   const fetchDraftData = async () => {
@@ -68,6 +114,7 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
       
       onDraftDataUpdate(processedData);
       setError('');
+      setLastRefresh(new Date());
     } catch (err) {
       console.error('Error in fetchDraftData:', err);
       setError(err.message);
@@ -192,6 +239,29 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
           />
         </div>
 
+        <div className="refresh-interval-input">
+          <label htmlFor="refresh-interval">Refresh (sec):</label>
+                       <input
+               type="number"
+               id="refresh-interval"
+               min="1"
+               max="300"
+               value={refreshInterval}
+               onChange={handleRefreshIntervalChange}
+               className="interval-input"
+             />
+        </div>
+
+        <label className="auto-refresh-toggle">
+          <input
+            type="checkbox"
+            id="auto-refresh-toggle"
+            checked={autoRefresh}
+            onChange={handleAutoRefreshToggle}
+          />
+          <span className="toggle-label">Auto</span>
+        </label>
+
         <button 
           className="fetch-btn"
           onClick={fetchDraftData}
@@ -200,6 +270,12 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
           {isLoading ? 'Loading...' : 'Fetch Draft'}
         </button>
       </div>
+
+      {lastRefresh && (
+        <div className="last-refresh-info">
+          Last refreshed: {lastRefresh.toLocaleTimeString()}
+        </div>
+      )}
 
       {error && (
         <div className="error-message">

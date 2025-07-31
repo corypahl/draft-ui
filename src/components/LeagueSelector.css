@@ -10,62 +10,59 @@
 .selector-container {
   display: flex;
   align-items: end;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .league-dropdown {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  min-width: 180px;
+  gap: 0.5rem;
+  min-width: 160px;
 }
 
 .draft-id-input {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  flex: 1;
-  min-width: 300px;
+  gap: 0.5rem;
+  min-width: 180px;
+  max-width: 220px;
 }
 
 .league-dropdown label,
-.draft-id-input label {
+.draft-id-input label,
+.refresh-interval-input label {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.league-dropdown select,
+.draft-id-input input,
+.interval-input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .league-dropdown select {
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  transition: all 0.2s ease;
   cursor: pointer;
 }
 
-.league-dropdown select:focus {
+.league-dropdown select:focus,
+.draft-id-input input:focus,
+.interval-input:focus {
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
-  outline: none;
-}
-
-.draft-id-input input {
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  transition: all 0.2s ease;
-}
-
-.draft-id-input input:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.1);
   outline: none;
 }
 
@@ -76,16 +73,18 @@
 .fetch-btn {
   background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
   color: white;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 120px;
-  height: 48px;
+  min-width: 110px;
+  height: 40px;
   align-self: flex-end;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .fetch-btn:hover:not(:disabled) {
@@ -137,6 +136,59 @@
   100% { transform: rotate(360deg); }
 }
 
+
+
+.auto-refresh-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  min-width: 70px;
+  align-self: flex-end;
+  padding: 0 4px;
+  height: 40px;
+}
+
+.auto-refresh-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.refresh-interval-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.interval-input {
+  width: 80px;
+  text-align: center;
+}
+
+.last-refresh-info {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .league-selector {
@@ -158,5 +210,17 @@
     width: 100%;
     height: auto;
     padding: 12px 24px;
+  }
+  
+  .refresh-interval-input {
+    min-width: 120px;
+  }
+  
+  .interval-input {
+    width: 80px;
+  }
+  
+  .auto-refresh-toggle {
+    min-width: 80px;
   }
 } 
