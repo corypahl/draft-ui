@@ -34,6 +34,8 @@ function App() {
     setDraftState(newDraftData);
   };
 
+
+
   return (
     <div className="App">
       <header className="App-header">
@@ -59,6 +61,7 @@ function App() {
           <div className="draft-center-panel">
             <PlayerList
               draftState={draftState}
+              currentLeague={currentLeague}
             />
           </div>
         </div>

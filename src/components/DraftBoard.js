@@ -23,6 +23,12 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
     return draftState.teams[teamIndex]?.name || 'No teams';
   };
 
+  const getCurrentTeam = () => {
+    if (draftState.teams.length === 0) return null;
+    const teamIndex = (draftState.currentPick - 1) % draftState.teams.length;
+    return draftState.teams[teamIndex];
+  };
+
   const getCurrentRound = () => {
     if (draftState.teams.length === 0) return 1;
     return Math.ceil(draftState.currentPick / draftState.teams.length);
@@ -53,7 +59,10 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
       <div className="current-pick">
         <h3>Current Pick: #{draftState.currentPick}</h3>
         <div className="pick-info">
-          <span className="current-team">{getCurrentTeamName()}</span>
+          <span className={`current-team ${getCurrentTeam() ? 'on-clock' : ''}`}>
+            {getCurrentTeamName()}
+            {getCurrentTeam() && <span className="on-clock-indicator">ON THE CLOCK</span>}
+          </span>
           {draftState.totalRounds > 0 && (
             <span className="round-info">
               Round {getCurrentRound()} of {draftState.totalRounds}
@@ -77,8 +86,10 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
             }
           </p>
         ) : (
-          draftState.teams.map((team, index) => (
-            <div key={team.id} className="team-item">
+          draftState.teams.map((team, index) => {
+            const isOnClock = getCurrentTeam()?.id === team.id;
+            return (
+            <div key={team.id} className={`team-item ${isOnClock ? 'on-clock' : ''}`}>
               <div className="team-info">
                 <span className="team-name">{team.name}</span>
                 {team.draftPosition && (
@@ -94,7 +105,8 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
                 )}
               </div>
             </div>
-          ))
+          );
+          })
         )}
       </div>
     </div>

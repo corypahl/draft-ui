@@ -88,6 +88,31 @@
   opacity: 0.9;
 }
 
+.current-team.on-clock {
+  color: #ffd700;
+  font-weight: 700;
+}
+
+.on-clock-indicator {
+  display: block;
+  font-size: 0.8rem;
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
 .round-info {
   font-size: 0.9rem;
   opacity: 0.8;
@@ -124,6 +149,19 @@
 .team-item:hover {
   background: var(--bg-tertiary);
   border-color: var(--accent-blue);
+}
+
+.team-item.on-clock {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+  animation: glow 2s infinite;
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.5); }
+  100% { box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3); }
 }
 
 .team-info {

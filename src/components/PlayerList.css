@@ -126,12 +126,41 @@
   border-bottom: none;
 }
 
-.player-rank {
+.tier-section {
+  margin-bottom: 1rem;
+}
+
+.tier-header {
+  background: var(--bg-tertiary);
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--accent-blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tier-label {
   font-size: 1.1rem;
+  color: var(--accent-blue);
+}
+
+.tier-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+
+
+.player-rank {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--accent-blue);
-  min-width: 50px;
+  min-width: 80px;
   text-align: center;
+  line-height: 1.2;
 }
 
 .player-info {
@@ -144,6 +173,15 @@
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-team-inline {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .player-details {
@@ -153,14 +191,7 @@
   font-size: 0.8rem;
 }
 
-.player-position {
-  padding: 2px 8px;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-}
+
 
 .player-team {
   color: var(--text-secondary);
@@ -170,6 +201,110 @@
 .player-tier {
   color: var(--text-muted);
   font-weight: 500;
+}
+
+.player-projection {
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+.player-adp {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.player-risk {
+  color: #e53e3e;
+  font-weight: 500;
+}
+
+.player-upside {
+  color: #38a169;
+  font-weight: 500;
+}
+
+.player-boom {
+  color: #d69e2e;
+  font-weight: 500;
+}
+
+.player-bust {
+  color: #e53e3e;
+  font-weight: 500;
+}
+
+.player-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.player-prev-rank {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.player-prev-pts {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+
+
+.rookie-badge {
+  background: #805ad5;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+
+.injury-badge {
+  background: #e53e3e;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+}
+
+.player-notes {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.injury-note {
+  color: #e53e3e;
+  font-weight: 500;
+  margin-right: 1rem;
+}
+
+.rookie-note {
+  color: #805ad5;
+  font-weight: 500;
+}
+
+.loading-message {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 2rem;
+}
+
+.error-message {
+  text-align: center;
+  color: #e53e3e;
+  font-weight: 500;
+  padding: 2rem;
+  background: rgba(229, 62, 62, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(229, 62, 62, 0.2);
 }
 
 .no-players {

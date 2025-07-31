@@ -1,48 +1,64 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { fetchPlayerData, processPlayerData } from '../services/playerDataService';
 import './PlayerList.css';
 
-const PlayerList = ({ availablePlayers, draftState }) => {
+const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [positionFilter, setPositionFilter] = useState('ALL');
+  const [allPlayers, setAllPlayers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Sample player data - in a real app, this would come from an API
-  const allPlayers = [
-    { id: 1, name: 'Christian McCaffrey', position: 'RB', team: 'SF', rank: 1, tier: 1 },
-    { id: 2, name: 'Tyreek Hill', position: 'WR', team: 'MIA', rank: 2, tier: 1 },
-    { id: 3, name: 'Breece Hall', position: 'RB', team: 'NYJ', rank: 3, tier: 1 },
-    { id: 4, name: 'CeeDee Lamb', position: 'WR', team: 'DAL', rank: 4, tier: 1 },
-    { id: 5, name: 'Ja\'Marr Chase', position: 'WR', team: 'CIN', rank: 5, tier: 1 },
-    { id: 6, name: 'Saquon Barkley', position: 'RB', team: 'PHI', rank: 6, tier: 2 },
-    { id: 7, name: 'Amon-Ra St. Brown', position: 'WR', team: 'DET', rank: 7, tier: 2 },
-    { id: 8, name: 'Bijan Robinson', position: 'RB', team: 'ATL', rank: 8, tier: 2 },
-    { id: 9, name: 'Garrett Wilson', position: 'WR', team: 'NYJ', rank: 9, tier: 2 },
-    { id: 10, name: 'Travis Kelce', position: 'TE', team: 'KC', rank: 10, tier: 2 },
-    { id: 11, name: 'Josh Allen', position: 'QB', team: 'BUF', rank: 11, tier: 2 },
-    { id: 12, name: 'Jahmyr Gibbs', position: 'RB', team: 'DET', rank: 12, tier: 2 },
-    { id: 13, name: 'Puka Nacua', position: 'WR', team: 'LAR', rank: 13, tier: 3 },
-    { id: 14, name: 'Jonathan Taylor', position: 'RB', team: 'IND', rank: 14, tier: 3 },
-    { id: 15, name: 'AJ Brown', position: 'WR', team: 'PHI', rank: 15, tier: 3 },
-    { id: 16, name: 'Kyren Williams', position: 'RB', team: 'LAR', rank: 16, tier: 3 },
-    { id: 17, name: 'Stefon Diggs', position: 'WR', team: 'HOU', rank: 17, tier: 3 },
-    { id: 18, name: 'Rachaad White', position: 'RB', team: 'TB', rank: 18, tier: 3 },
-    { id: 19, name: 'Chris Olave', position: 'WR', team: 'NO', rank: 19, tier: 3 },
-    { id: 20, name: 'Jalen Hurts', position: 'QB', team: 'PHI', rank: 20, tier: 3 },
-    { id: 21, name: 'Patrick Mahomes', position: 'QB', team: 'KC', rank: 21, tier: 3 },
-    { id: 22, name: 'Lamar Jackson', position: 'QB', team: 'BAL', rank: 22, tier: 3 },
-    { id: 23, name: 'Sam LaPorta', position: 'TE', team: 'DET', rank: 23, tier: 3 },
-    { id: 24, name: 'Mark Andrews', position: 'TE', team: 'BAL', rank: 24, tier: 3 },
-    { id: 25, name: 'T.J. Hockenson', position: 'TE', team: 'MIN', rank: 25, tier: 3 },
-    { id: 26, name: 'Justin Tucker', position: 'K', team: 'BAL', rank: 26, tier: 4 },
-    { id: 27, name: 'San Francisco 49ers', position: 'DEF', team: 'SF', rank: 27, tier: 4 },
-    { id: 28, name: 'Dallas Cowboys', position: 'DEF', team: 'DAL', rank: 28, tier: 4 },
-    { id: 29, name: 'Baltimore Ravens', position: 'DEF', team: 'BAL', rank: 29, tier: 4 },
-    { id: 30, name: 'New York Jets', position: 'DEF', team: 'NYJ', rank: 30, tier: 4 }
-  ];
+  // Fetch player data when league changes
+  useEffect(() => {
+    const loadPlayerData = async () => {
+      if (!currentLeague) return;
+      
+      setIsLoading(true);
+      setError('');
+      
+      try {
+        const rawData = await fetchPlayerData();
+        const processedPlayers = processPlayerData(rawData, currentLeague);
+        setAllPlayers(processedPlayers);
+      } catch (err) {
+        console.error('Error loading player data:', err);
+        setError('Failed to load player data. Please try again.');
+        setAllPlayers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadPlayerData();
+  }, [currentLeague]);
 
   // Filter out drafted players and apply search/filter
   const filteredPlayers = useMemo(() => {
-    const draftedPlayerIds = draftState.draftedPlayers.map(p => p.id);
-    const available = allPlayers.filter(player => !draftedPlayerIds.includes(player.id));
+    // Get drafted player names from Sleeper data
+    const draftedPlayerNames = draftState.draftedPlayers.map(p => 
+      p.metadata?.first_name && p.metadata?.last_name 
+        ? `${p.metadata.first_name} ${p.metadata.last_name}`
+        : p.metadata?.name || p.name || ''
+    ).filter(name => name); // Remove empty names
+    
+    console.log('Drafted players from Sleeper:', draftedPlayerNames);
+    console.log('Total players loaded:', allPlayers.length);
+    
+    // Log sample player data to see all available fields
+    if (allPlayers.length > 0) {
+      console.log('Sample player with all data fields:', allPlayers[0]);
+      console.log('Available fields:', Object.keys(allPlayers[0]));
+    }
+    
+    // Filter out players who have been drafted in Sleeper
+    const available = allPlayers.filter(player => 
+      !draftedPlayerNames.some(draftedName => 
+        player.name.toLowerCase() === draftedName.toLowerCase()
+      )
+    );
+    
+    console.log('Available players after filtering:', available.length);
     
     return available.filter(player => {
       const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,7 +66,27 @@ const PlayerList = ({ availablePlayers, draftState }) => {
       const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
       return matchesSearch && matchesPosition;
     }).sort((a, b) => a.rank - b.rank);
-  }, [searchTerm, positionFilter, draftState.draftedPlayers]);
+  }, [searchTerm, positionFilter, draftState.draftedPlayers, allPlayers]);
+
+  // Group players by tier
+  const playersByTier = useMemo(() => {
+    const grouped = {};
+    filteredPlayers.forEach(player => {
+      const tier = player.tier;
+      if (!grouped[tier]) {
+        grouped[tier] = [];
+      }
+      grouped[tier].push(player);
+    });
+    
+    // Sort tiers and players within each tier
+    return Object.keys(grouped)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .reduce((acc, tier) => {
+        acc[tier] = grouped[tier].sort((a, b) => a.rank - b.rank);
+        return acc;
+      }, {});
+  }, [filteredPlayers]);
 
   const getPositionColor = (position) => {
     const colors = {
@@ -68,12 +104,40 @@ const PlayerList = ({ availablePlayers, draftState }) => {
     return `position-${position.toLowerCase()}`;
   };
 
+  // Calculate position rank for a player
+  const getPositionRank = (player, allPlayers) => {
+    const samePositionPlayers = allPlayers.filter(p => p.position === player.position);
+    const sortedByRank = samePositionPlayers.sort((a, b) => a.rank - b.rank);
+    const positionRank = sortedByRank.findIndex(p => p.id === player.id) + 1;
+    return positionRank;
+  };
+
   const positions = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+
+  if (isLoading) {
+    return (
+      <div className="player-list">
+        <div className="loading-message">
+          Loading player data for {currentLeague} league...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="player-list">
+        <div className="error-message">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="player-list">
       <div className="player-list-header">
-        <h2>Available Players</h2>
+        <h2>Available Players - {currentLeague}</h2>
         <div className="player-count">
           {filteredPlayers.length} players available
         </div>
@@ -102,7 +166,7 @@ const PlayerList = ({ availablePlayers, draftState }) => {
 
       <div className="draft-summary">
         <div className="summary-item">
-          <span className="summary-label">Players Drafted:</span>
+          <span className="summary-label">Players Drafted (Sleeper):</span>
           <span className="summary-value">{draftState.draftedPlayers.length}</span>
         </div>
         {draftState.picksRemaining !== undefined && (
@@ -111,36 +175,92 @@ const PlayerList = ({ availablePlayers, draftState }) => {
             <span className="summary-value">{draftState.picksRemaining}</span>
           </div>
         )}
+        <div className="summary-item">
+          <span className="summary-label">Available Players:</span>
+          <span className="summary-value">{filteredPlayers.length}</span>
+        </div>
       </div>
 
-      <div className="players-container">
-        {filteredPlayers.length === 0 ? (
-          <div className="no-players">
-            {searchTerm || positionFilter !== 'ALL' 
-              ? 'No players match your search criteria.'
-              : 'All players have been drafted!'
-            }
-          </div>
-        ) : (
-          filteredPlayers.map((player, index) => (
-            <div key={player.id} className="player-item">
-              <div className="player-rank">#{player.rank}</div>
-              <div className="player-info">
-                <div className="player-name">{player.name}</div>
-                <div className="player-details">
-                  <span 
-                    className={`player-position ${getPositionClass(player.position)}`}
-                  >
-                    {player.position}
-                  </span>
-                  <span className="player-team">{player.team}</span>
-                  <span className="player-tier">Tier {player.tier}</span>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+             <div className="players-container">
+         {filteredPlayers.length === 0 ? (
+           <div className="no-players">
+             {searchTerm || positionFilter !== 'ALL' 
+               ? 'No players match your search criteria.'
+               : 'All players have been drafted!'
+             }
+           </div>
+         ) : (
+           Object.entries(playersByTier).map(([tier, players]) => (
+             <div key={tier} className="tier-section">
+               <div className="tier-header">
+                 <span className="tier-label">Tier {tier}</span>
+                 <span className="tier-count">({players.length} players)</span>
+               </div>
+               {players.map((player) => {
+                 const positionRank = getPositionRank(player, allPlayers);
+                 return (
+                   <div key={player.id} className="player-item">
+                     <div className="player-rank">
+                       #{player.rank} ({player.position}{positionRank})
+                     </div>
+                     <div className="player-info">
+                       <div 
+                         className="player-name"
+                         style={{ color: getPositionColor(player.position) }}
+                       >
+                         {player.name}
+                         <span className="player-team-inline">
+                           {player.team}{player.bye > 0 && ` (${player.bye})`}
+                         </span>
+                         {player.isRookie && <span className="rookie-badge">R</span>}
+                         {player.injury && <span className="injury-badge">⚠</span>}
+                       </div>
+                                               <div className="player-details">
+                          {player.adp && (
+                            <span className="player-adp">ADP: {player.adp}</span>
+                          )}
+                          {player.risk && (
+                            <span className="player-risk">Risk: {player.risk}</span>
+                          )}
+                          {player.upside && (
+                            <span className="player-upside">Upside: {player.upside}</span>
+                          )}
+                          {player.boom && (
+                            <span className="player-boom">Boom: {player.boom}</span>
+                          )}
+                          {player.bust && (
+                            <span className="player-bust">Bust: {player.bust}</span>
+                          )}
+                        </div>
+                                                 <div className="player-stats">
+                           {player.projectedPoints > 0 && (
+                             <span className="player-projection">Proj: {player.projectedPoints.toFixed(1)}</span>
+                           )}
+                           {player['Prev Rank'] && (
+                             <span className="player-prev-rank">Prev Rank: {player['Prev Rank']}</span>
+                           )}
+                           {player['Prev Pts'] && (
+                             <span className="player-prev-pts">Prev Pts: {player['Prev Pts']}</span>
+                           )}
+                         </div>
+                       {(player.injury || player.isRookie) && (
+                         <div className="player-notes">
+                           {player.injury && (
+                             <span className="injury-note">{player.injuryStatus}</span>
+                           )}
+                           {player.isRookie && (
+                             <span className="rookie-note">{player.college} - Round {player.draftRound}</span>
+                           )}
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                 );
+               })}
+             </div>
+           ))
+         )}
+       </div>
     </div>
   );
 };
