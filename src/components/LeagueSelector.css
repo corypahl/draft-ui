@@ -1,0 +1,226 @@
+.league-selector {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.selector-container {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.league-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 160px;
+}
+
+.draft-id-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.league-dropdown label,
+.draft-id-input label,
+.refresh-interval-input label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.league-dropdown select,
+.draft-id-input input,
+.interval-input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.league-dropdown select {
+  cursor: pointer;
+}
+
+.league-dropdown select:focus,
+.draft-id-input input:focus,
+.interval-input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.1);
+  outline: none;
+}
+
+.draft-id-input input::placeholder {
+  color: var(--text-muted);
+}
+
+.fetch-btn {
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 110px;
+  height: 40px;
+  align-self: flex-end;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fetch-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+}
+
+.fetch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  background: rgba(229, 62, 62, 0.1);
+  color: #feb2b2;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  border-left: 4px solid var(--accent-red);
+  font-weight: 500;
+}
+
+.loading-message {
+  background: rgba(49, 130, 206, 0.1);
+  color: #90cdf4;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  border-left: 4px solid var(--accent-blue);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.loading-message::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--accent-blue);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+.auto-refresh-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  min-width: 70px;
+  align-self: flex-end;
+  padding: 0 4px;
+  height: 40px;
+}
+
+.auto-refresh-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.refresh-interval-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.interval-input {
+  width: 80px;
+  text-align: center;
+}
+
+.last-refresh-info {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .league-selector {
+    padding: 1.5rem;
+  }
+  
+  .selector-container {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .league-dropdown,
+  .draft-id-input {
+    min-width: 100%;
+  }
+  
+  .fetch-btn {
+    width: 100%;
+    height: auto;
+    padding: 12px 24px;
+  }
+  
+  .refresh-interval-input {
+    min-width: 120px;
+  }
+  
+  .interval-input {
+    width: 80px;
+  }
+  
+  .auto-refresh-toggle {
+    min-width: 80px;
+  }
+} 
