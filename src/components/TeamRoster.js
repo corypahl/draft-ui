@@ -13,7 +13,7 @@ const TeamRoster = ({ selectedTeam, draftedPlayers, currentLeague }) => {
       case 'WR': return '#45b7d1';
       case 'TE': return '#96ceb4';
       case 'K': return '#feca57';
-      case 'DEF': return '#ff9ff3';
+      case 'D': return '#ff9ff3';
       default: return '#ddd';
     }
   };
@@ -73,8 +73,8 @@ const TeamRoster = ({ selectedTeam, draftedPlayers, currentLeague }) => {
           <span className="position-number">{getPositionCount('K')}</span>
         </div>
         <div className="position-count">
-          <span className="position-label">DEF:</span>
-          <span className="position-number">{getPositionCount('DEF')}</span>
+          <span className="position-label">D:</span>
+          <span className="position-number">{getPositionCount('D')}</span>
         </div>
       </div>
 

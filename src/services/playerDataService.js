@@ -155,7 +155,7 @@ const getPositionFromKey = (key) => {
   if (key.includes('WR')) return 'WR';
   if (key.includes('TE')) return 'TE';
   if (key.includes('K')) return 'K';
-  if (key.includes('DEF')) return 'DEF';
+  if (key.includes('D')) return 'D';
   return 'UNK';
 };
 

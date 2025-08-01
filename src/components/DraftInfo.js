@@ -32,7 +32,7 @@ const DraftInfo = ({ draftState, currentLeague }) => {
       'WR': '#3182ce',
       'TE': '#805ad5',
       'K': '#d69e2e',
-      'DEF': '#dd6b20'
+      'D': '#dd6b20'
     };
     return colors[position] || '#718096';
   };

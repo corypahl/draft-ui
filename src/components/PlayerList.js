@@ -88,7 +88,7 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
     if (key.includes('WR')) return 'WR';
     if (key.includes('TE')) return 'TE';
     if (key.includes('K')) return 'K';
-    if (key.includes('DEF')) return 'DEF';
+    if (key.includes('D')) return 'D';
     return 'UNK';
   };
 
@@ -154,7 +154,7 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
       'WR': '#3182ce',
       'TE': '#805ad5',
       'K': '#d69e2e',
-      'DEF': '#dd6b20'
+      'D': '#dd6b20'
     };
     return colors[position] || '#718096';
   };
@@ -171,7 +171,7 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
     return positionRank;
   };
 
-  const positions = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+  const positions = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K', 'D'];
 
   // Handle team button click
   const handleTeamClick = (teamName, event) => {

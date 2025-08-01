@@ -81,7 +81,7 @@ npm run deploy
 
 ### Player List
 - **Comprehensive Data**: View player rankings, tiers, ADP, projections, upside, risk, boom/bust potential
-- **Search & Filter**: Search by player name or team, filter by position (QB, RB, WR, TE, K, DEF)
+- **Search & Filter**: Search by player name or team, filter by position (QB, RB, WR, TE, K, D)
 - **Color-coded System**: Position-based color coding for easy identification
 - **Tier Organization**: Players organized by tiers for strategic drafting
 
