@@ -5,6 +5,7 @@ import PlayerList from './components/PlayerList';
 import DraftBoard from './components/DraftBoard';
 import DepthCharts from './components/DepthCharts';
 import DraftInfo from './components/DraftInfo';
+import Shortlist from './components/Shortlist';
 
 function App() {
   const [currentLeague, setCurrentLeague] = useState('FanDuel');
@@ -120,8 +121,14 @@ function App() {
           </button>
         </div>
 
-        <div className="draft-container">
-          {renderTabContent()}
+        <div className="main-content">
+          <div className="draft-container">
+            {renderTabContent()}
+          </div>
+          <Shortlist
+            draftState={draftState}
+            currentLeague={currentLeague}
+          />
         </div>
       </main>
     </div>

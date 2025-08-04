@@ -83,7 +83,14 @@
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
+.main-content {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 200px);
+}
+
 .draft-container {
+  flex: 1;
   min-height: calc(100vh - 200px);
 }
 
@@ -113,5 +120,9 @@
     min-width: 100px;
     padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
+  }
+
+  .main-content {
+    flex-direction: column;
   }
 } 
