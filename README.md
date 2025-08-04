@@ -1,41 +1,105 @@
-# 🏈 Fantasy Football Draft Assistant
+# Fantasy Football Draft Assistant
 
-A modern, responsive React web application designed to help you dominate your fantasy football draft. Built with React and deployed on GitHub Pages.
+A comprehensive web application for managing and tracking fantasy football drafts with real-time updates, player rankings, and draft analytics.
 
-## ✨ Features
+## Features
 
-- **Advanced Player List**: Comprehensive player database with rankings, tiers, and detailed statistics
-- **Depth Chart Integration**: Team depth charts accessible via interactive tooltips
-- **Injury Tracking**: Visual injury indicators with status information
-- **Rookie Identification**: Special badges for rookie players with draft round information
-- **Real-time Search & Filtering**: Search players by name or team, filter by position
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-- **Modern UI**: Beautiful, intuitive interface with smooth animations and dark theme
+- **Multi-Source Draft Tracking**: Support for both Sleeper API and Google Apps Script JSON data sources
+- **Real-Time Updates**: Auto-refresh functionality for live draft tracking
+- **Player Rankings**: Comprehensive player data with rankings, projections, and analysis
+- **Draft Board**: Visual representation of draft progress with team rosters
+- **Player Recommendations**: AI-powered suggestions based on team needs and available players
+- **Depth Chart Analysis**: Team depth chart integration for better decision making
+- **Injury Tracking**: Real-time injury updates and status monitoring
+- **Rookie Information**: Detailed rookie profiles with draft position and college stats
+- **Search & Filter**: Search by player name or team, filter by position (QB, RB, WR, TE, K, D)
 
-## 🚀 Live Demo
+## Data Sources
 
-Visit the live application: [Fantasy Football Draft Assistant](https://cory.github.io/draft-ui)
+### Sleeper API
+- Real-time draft data from Sleeper fantasy football platform
+- Requires draft ID from your Sleeper league
+- Provides rich player metadata including position, team, rankings, and projections
 
-## 🛠️ Tech Stack
+### Google Apps Script JSON
+- Manual draft tracking via Google Apps Script
+- Simple JSON format for easy updates
+- Perfect for leagues using platforms not supported by Sleeper
 
-- **Frontend**: React 18 with Hooks
-- **Styling**: CSS3 with modern design patterns and CSS Grid/Flexbox
-- **State Management**: React useState, useMemo, useEffect, useRef
-- **Deployment**: GitHub Pages
-- **CI/CD**: GitHub Actions
+#### Google Apps Script JSON Format
 
-## 📦 Installation & Setup
+**Current Simple Format:**
+```json
+{
+  "Draft Board": [
+    {
+      "Michael": "Christian McCaffrey",
+      "Koyn": "Bijan Robinson",
+      "Robby": "Jonathan Taylor",
+      "Randy": "Breece Hall",
+      "Bambi": "Tyreek Hill",
+      "McBride": "CeeDee Lamb"
+    },
+    {
+      "Michael": "Jalen Hurts",
+      "Koyn": "Nico Collins",
+      "Robby": "Joe Mixon",
+      "Randy": "Chris Olave",
+      "Bambi": "De'Von Achane",
+      "McBride": "James Cook"
+    }
+  ]
+}
+```
 
-### Prerequisites
+**Enhanced Format (Recommended):**
+```json
+{
+  "Draft Board": [
+    {
+      "round": 1,
+      "picks": [
+        {
+          "team": "Michael",
+          "player": "Christian McCaffrey",
+          "position": "RB",
+          "team": "SF",
+          "rank": 1
+        },
+        {
+          "team": "Koyn",
+          "player": "Bijan Robinson",
+          "position": "RB",
+          "team": "ATL",
+          "rank": 2
+        }
+      ]
+    }
+  ],
+  "teams": [
+    {
+      "name": "Michael",
+      "draftPosition": 1
+    },
+    {
+      "name": "Koyn",
+      "draftPosition": 2
+    }
+  ],
+  "settings": {
+    "totalRounds": 15,
+    "draftType": "snake",
+    "season": "2025",
+    "leagueName": "My Fantasy League"
+  }
+}
+```
 
-- Node.js (version 16 or higher)
-- npm or yarn
-
-### Local Development
+## Getting Started
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/cory/draft-ui.git
+   git clone <repository-url>
    cd draft-ui
    ```
 
@@ -49,94 +113,75 @@ Visit the live application: [Fantasy Football Draft Assistant](https://cory.gith
    npm start
    ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:3000` to view the application.
+4. **Configure your data source**
+   - For Sleeper: Enter your draft ID in the interface
+   - For Google Apps Script: Set up your Google Apps Script with the provided JSON format
 
-### Building for Production
+## Usage
 
-```bash
-npm run build
-```
+### Using Sleeper API
+1. Select "Sleeper API" as your data source
+2. Enter your Sleeper draft ID
+3. Click "Fetch Sleeper Draft" to load your draft data
+4. Enable auto-refresh for real-time updates
 
-### Deploying to GitHub Pages
+### Using Google Apps Script
+1. Select "Google Apps Script" as your data source
+2. Set up your Google Apps Script to return JSON in the supported format
+3. Click "Fetch Google Apps Script Draft" to load your draft data
+4. Enable auto-refresh for real-time updates
 
-The application is automatically deployed to GitHub Pages when you push to the `main` branch. The deployment is handled by GitHub Actions.
+### Manual Updates
+- For Google Apps Script: Update your spreadsheet and the JSON will automatically reflect changes
+- The app will refresh automatically if auto-refresh is enabled
 
-To manually deploy:
+## Features in Detail
 
-```bash
-npm run deploy
-```
-
-## 🎯 How to Use
-
-1. **Browse Players**: View the comprehensive player list with rankings, tiers, and statistics
-2. **Search & Filter**: Use the search bar to find players by name or team, or filter by position
-3. **View Depth Charts**: Click team buttons below the search bar to view team depth charts
-4. **Track Injuries**: Look for crutch icons (🩼) next to injured players with status information
-5. **Identify Rookies**: Purple "R1", "R2", etc. badges indicate rookie players and their draft round
-6. **Analyze Data**: View detailed player statistics including ADP, projections, upside, risk, and more
-
-## 📱 Features in Detail
+### Draft Board
+- Visual representation of all teams and their picks
+- Current pick highlighting with "on the clock" indicators
+- Round-by-round draft progression
+- Team roster management
 
 ### Player List
-- **Comprehensive Data**: View player rankings, tiers, ADP, projections, upside, risk, boom/bust potential
-- **Search & Filter**: Search by player name or team, filter by position (QB, RB, WR, TE, K, D)
-- **Color-coded System**: Position-based color coding for easy identification
-- **Tier Organization**: Players organized by tiers for strategic drafting
+- Comprehensive player database with rankings and projections
+- Position-based filtering and search functionality
+- Draft status indicators (available/drafted)
+- Player recommendations based on team needs
 
-### Depth Chart Tooltip
-- **Team Buttons**: Interactive buttons for each NFL team below the search bar
-- **Depth Chart Display**: 4-column layout showing QB, RB, WR, TE depth charts
-- **Lazy Loading**: Depth charts load efficiently after initial page load
-- **Responsive Design**: Adapts to different screen sizes with optimized layouts
+### My Team
+- Personal team roster management
+- Position-based roster analysis
+- Draft strategy recommendations
+- Team strength analysis
 
-### Player Information Display
-- **Injury Tracking**: Crutch icon (🩼) with inline injury status for injured players
-- **Rookie Badges**: Purple badges showing draft round (R1, R2, etc.) for rookie players
-- **Two-Row Data Layout**: 
-  - Row 1: ADP, Projected Points, Upside, Risk
-  - Row 2: Previous Rank, Previous Points, Boom, Bust
-- **College Information**: College details displayed for rookie players
+### Draft Info
+- Draft settings and configuration
+- League information and rules
+- Draft statistics and analytics
+- Historical draft data
 
-### Visual Enhancements
-- **Dark Theme**: Modern dark interface for reduced eye strain
-- **Hover Effects**: Smooth transitions and hover states throughout
-- **Responsive Grid**: Adaptive layouts for desktop, tablet, and mobile
-- **Professional Typography**: Clean, readable fonts with proper hierarchy
+## Technical Details
 
-## 🔧 Configuration
+### Architecture
+- React-based frontend with modern hooks and functional components
+- Modular service architecture for data handling
+- Responsive design with CSS Grid and Flexbox
+- Real-time data synchronization
 
-### Environment Variables
+### Data Processing
+- Unified data processing pipeline for multiple sources
+- Player data enrichment with rankings and projections
+- Real-time draft state management
+- Error handling and validation
 
-No environment variables are required for basic functionality. The application uses sample data for demonstration purposes.
+### Performance
+- Optimized rendering with React.memo and useMemo
+- Efficient data structures for large player databases
+- Minimal re-renders with proper state management
+- Lazy loading for improved initial load times
 
-### Customization
-
-You can customize the application by:
-- Modifying the player data structure in `src/services/playerDataService.js`
-- Adjusting the color scheme in the CSS files
-- Adding new features to the components
-- Customizing depth chart display options
-
-## 🏗️ Project Structure
-
-```
-src/
-├── components/
-│   ├── PlayerList.js          # Main player list component
-│   ├── PlayerList.css         # Player list styling
-│   ├── DepthChartTooltip.js   # Depth chart tooltip component
-│   ├── DepthChartTooltip.css  # Tooltip styling
-│   ├── LeagueSelector.js      # League selection component
-│   └── LeagueSelector.css     # League selector styling
-├── services/
-│   └── playerDataService.js   # Data fetching and processing
-├── App.js                     # Main application component
-└── App.css                    # Global application styling
-```
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -144,21 +189,22 @@ src/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Support
 
-- Built with React and modern web technologies
-- Deployed on GitHub Pages
-- Icons and emojis for enhanced user experience
-- Depth chart data integration for comprehensive team analysis
+For support and questions:
+- Create an issue in the GitHub repository
+- Check the documentation for common questions
+- Review the troubleshooting guide
 
-## 📞 Support
+## Roadmap
 
-If you have any questions or need support, please open an issue on GitHub.
-
----
-
-**Happy Drafting! 🏈**
+- [ ] Enhanced player analytics and projections
+- [ ] Multi-league support and management
+- [ ] Advanced draft strategy tools
+- [ ] Mobile app development
+- [ ] Integration with additional fantasy platforms
+- [ ] Real-time chat and communication features

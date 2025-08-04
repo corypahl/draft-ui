@@ -34,6 +34,50 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
     return Math.ceil(draftState.currentPick / draftState.teams.length);
   };
 
+  // Get position color for player
+  const getPositionColor = (position) => {
+    const colors = {
+      'QB': '#e53e3e', // Red
+      'RB': '#38a169', // Green
+      'WR': '#3182ce', // Blue
+      'TE': '#805ad5', // Purple
+      'K': '#d69e2e',  // Yellow
+      'D': '#dd6b20',  // Orange
+      'UNK': '#718096' // Gray
+    };
+    return colors[position] || colors['UNK'];
+  };
+
+  // Format player name as first initial + last name (Sleeper style)
+  const formatPlayerName = (fullName) => {
+    if (!fullName) return '';
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length < 2) return fullName;
+    
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ');
+    
+    return `${firstName.charAt(0)}. ${lastName}`;
+  };
+
+  // Get player for specific team and round
+  const getPlayerForTeamAndRound = (teamId, round) => {
+    const team = draftState.teams.find(t => t.id === teamId);
+    if (!team) return null;
+    
+    return team.picks.find(pick => pick.draftRound === round);
+  };
+
+  // Check if this is the current pick
+  const isCurrentPick = (teamId, round) => {
+    const currentTeam = getCurrentTeam();
+    const currentRound = getCurrentRound();
+    return currentTeam?.id === teamId && currentRound === round;
+  };
+
+  // Calculate total rounds needed
+  const totalRounds = draftState.totalRounds || Math.max(...draftState.teams.map(team => team.picks.length), 1);
+
   return (
     <div className="draft-board">
       <div className="draft-board-header">
@@ -47,6 +91,9 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
             {draftState.season && (
               <span className="season">• {draftState.season}</span>
             )}
+            {draftState.dataSource && (
+              <span className="data-source">• {draftState.dataSource === 'sleeper' ? 'Sleeper API' : 'Google Apps Script'}</span>
+            )}
           </div>
         </div>
         {draftState.teams.length === 0 && (
@@ -56,59 +103,76 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
         )}
       </div>
       
-      <div className="current-pick">
-        <h3>Current Pick: #{draftState.currentPick}</h3>
-        <div className="pick-info">
-          <span className={`current-team ${getCurrentTeam() ? 'on-clock' : ''}`}>
-            {getCurrentTeamName()}
-            {getCurrentTeam() && <span className="on-clock-indicator">ON THE CLOCK</span>}
-          </span>
-          {draftState.totalRounds > 0 && (
-            <span className="round-info">
-              Round {getCurrentRound()} of {draftState.totalRounds}
-            </span>
-          )}
-        </div>
-        {draftState.picksRemaining !== undefined && (
-          <div className="picks-remaining">
-            Picks Remaining: {draftState.picksRemaining}
-          </div>
-        )}
-      </div>
 
-      <div className="teams-list">
-        <h3>Teams ({draftState.teams.length})</h3>
-        {draftState.teams.length === 0 ? (
-          <p className="no-teams">
+
+      {draftState.teams.length === 0 ? (
+        <div className="no-teams">
+          <p>
             {draftState.draftStatus === 'pre_draft' 
               ? 'No teams added yet. Click "Add Team" to get started.'
               : 'No teams found in draft data.'
             }
           </p>
-        ) : (
-          draftState.teams.map((team, index) => {
-            const isOnClock = getCurrentTeam()?.id === team.id;
-            return (
-            <div key={team.id} className={`team-item ${isOnClock ? 'on-clock' : ''}`}>
-              <div className="team-info">
-                <span className="team-name">{team.name}</span>
-                {team.draftPosition && (
-                  <span className="draft-position">#{team.draftPosition}</span>
-                )}
-              </div>
-              <div className="team-stats">
-                <span className="team-picks">{team.picks.length} picks</span>
-                {team.picks.length > 0 && (
-                  <span className="last-pick">
-                    Last: {team.picks[team.picks.length - 1]?.name}
-                  </span>
-                )}
-              </div>
+        </div>
+      ) : (
+        <div className="draft-grid-container">
+          <div className="draft-grid">
+            {/* Header row with team names */}
+            <div className="grid-header">
+              <div className="round-label-header">Round</div>
+              {draftState.teams.map((team, index) => (
+                <div key={team.id} className="team-header">
+                  <div className="team-name-header">{team.name}</div>
+                  {team.draftPosition && (
+                    <div className="draft-position-header">#{team.draftPosition}</div>
+                  )}
+                </div>
+              ))}
             </div>
-          );
-          })
-        )}
-      </div>
+
+            {/* Grid rows for each round */}
+            {Array.from({ length: totalRounds }, (_, roundIndex) => {
+              const round = roundIndex + 1;
+              return (
+                <div key={round} className="grid-row">
+                  <div className="round-label">{round}</div>
+                  {draftState.teams.map((team, teamIndex) => {
+                    const player = getPlayerForTeamAndRound(team.id, round);
+                    const isCurrent = isCurrentPick(team.id, round);
+                    const isOnClock = getCurrentTeam()?.id === team.id;
+                    
+                    return (
+                      <div 
+                        key={`${team.id}-${round}`} 
+                        className={`grid-cell ${isCurrent ? 'current-pick-cell' : ''} ${isOnClock ? 'on-clock-cell' : ''}`}
+                      >
+                        {player ? (
+                          <div 
+                            className="player-cell"
+                            style={{ borderLeftColor: getPositionColor(player.position) }}
+                          >
+                            <div className="player-name" style={{ color: getPositionColor(player.position) }}>
+                              {formatPlayerName(player.name)}
+                            </div>
+                          </div>
+                        ) : isCurrent ? (
+                          <div className="current-pick-placeholder">
+                            <div className="pick-number">#{draftState.currentPick}</div>
+                          </div>
+                        ) : (
+                          <div className="empty-cell">
+                            <div className="pick-number">#{((round - 1) * draftState.teams.length) + teamIndex + 1}</div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

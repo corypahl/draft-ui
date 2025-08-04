@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { fetchPlayerData, processPlayerData } from '../services/playerDataService';
 import DepthChartTooltip from './DepthChartTooltip';
+import PlayerRecommendations from './PlayerRecommendations';
 import './PlayerList.css';
 
 const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
@@ -79,7 +80,7 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
       }
     });
     
-    console.log('Depth chart data loaded for teams:', Object.keys(processedDepthCharts));
+    // Depth chart data loaded
   };
 
   const getPositionFromKey = (key) => {
@@ -94,29 +95,28 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
 
   // Filter out drafted players and apply search/filter
   const filteredPlayers = useMemo(() => {
-    // Get drafted player names from Sleeper data
-    const draftedPlayerNames = draftState.draftedPlayers.map(p => 
-      p.metadata?.first_name && p.metadata?.last_name 
-        ? `${p.metadata.first_name} ${p.metadata.last_name}`
-        : p.metadata?.name || p.name || ''
-    ).filter(name => name); // Remove empty names
+    // Get drafted player names from both Sleeper and Google Apps Script data
+    const draftedPlayerNames = draftState.draftedPlayers.map(p => {
+      // Handle Sleeper format (metadata.first_name + metadata.last_name)
+      if (p.metadata?.first_name && p.metadata?.last_name) {
+        return `${p.metadata.first_name} ${p.metadata.last_name}`;
+      }
+      // Handle Google Apps Script format (direct name field)
+      return p.name || '';
+    }).filter(name => name); // Remove empty names
     
-    console.log('Drafted players from Sleeper:', draftedPlayerNames);
-    console.log('Total players loaded:', allPlayers.length);
+    // Filtering players...
+    console.log('Drafted players from draft state:', draftState.draftedPlayers);
+    console.log('Drafted player names extracted:', draftedPlayerNames);
     
-    // Log sample player data to see all available fields
-    if (allPlayers.length > 0) {
-      console.log('Sample player with all data fields:', allPlayers[0]);
-      console.log('Available fields:', Object.keys(allPlayers[0]));
-    }
-    
-    // Filter out players who have been drafted in Sleeper
+    // Filter out players who have been drafted
     const available = allPlayers.filter(player => 
       !draftedPlayerNames.some(draftedName => 
         player.name.toLowerCase() === draftedName.toLowerCase()
       )
     );
     
+    // Available players filtered
     console.log('Available players after filtering:', available.length);
     
     return available.filter(player => {
@@ -196,6 +196,8 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
     setSelectedTeam(null);
     setDepthChartData(null);
   };
+
+
 
   if (isLoading) {
     return (
@@ -341,6 +343,13 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague }) => {
           )}
         </div>
       </div>
+      
+      {/* Smart Recommendations */}
+      <PlayerRecommendations
+        draftState={draftState}
+        allPlayers={allPlayers}
+        currentLeague={currentLeague}
+      />
       
       {/* Depth Chart Tooltip */}
       <DepthChartTooltip

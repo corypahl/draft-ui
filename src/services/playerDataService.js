@@ -14,8 +14,7 @@ export const fetchPlayerData = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log('Fetched data structure:', Object.keys(data));
-    console.log('Sample data:', data);
+    // Data fetched successfully
     return data;
   } catch (error) {
     console.error('Error fetching player data:', error);
@@ -39,9 +38,7 @@ export const processPlayerData = (rawData, selectedLeague) => {
   const injuries = rawData['Injuries'] || [];
   const rookies = rawData['Rookies'] || [];
 
-  console.log('Processing data for league:', selectedLeague);
-  console.log('Ranking table:', rankingTable);
-  console.log('Raw rankings data:', rankings);
+  // Processing data for league: ${selectedLeague}
 
   if (!Array.isArray(rankings)) {
     console.error('Rankings data is not an array:', rankings);
@@ -61,7 +58,7 @@ export const processPlayerData = (rawData, selectedLeague) => {
     });
   });
 
-  console.log('Depth chart map sample:', Object.keys(depthChartMap).slice(0, 5));
+  // Depth chart data processed
 
   // Create a map of injury data
   const injuryMap = {};
@@ -138,13 +135,6 @@ export const processPlayerData = (rawData, selectedLeague) => {
   });
 
   const sortedPlayers = players.sort((a, b) => a.rank - b.rank);
-  console.log('Processed players:', sortedPlayers.slice(0, 5)); // Log first 5 players
-  
-  // Log all available fields from the first player for debugging
-  if (sortedPlayers.length > 0) {
-    console.log('Available fields in player data:', Object.keys(sortedPlayers[0]));
-    console.log('Sample player with all data:', sortedPlayers[0]);
-  }
   
   return sortedPlayers;
 };
