@@ -3,9 +3,39 @@
 const SLEEPER_API_BASE = 'https://api.sleeper.app/v1';
 const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrc3faGJjl42kfneDjTv7KmAr8b9p2FAjgHXriwVC80tw1diwANlEyQVwISkPz5BAO_Q/exec';
 
+// User identification constants
+const USER_IDENTIFIERS = {
+  SLEEPER: 'CoryPahl',
+  SLEEPER_USER_ID: '331180436753502208',
+  GOOGLE_APPS_SCRIPT: 'Cory'
+};
+
 export const DATA_SOURCES = {
   SLEEPER: 'sleeper',
   GOOGLE_APPS_SCRIPT: 'google_apps_script'
+};
+
+// Function to identify user's team
+export const identifyUserTeam = (teams, dataSource) => {
+  const userIdentifier = USER_IDENTIFIERS[dataSource.toUpperCase()];
+  const sleeperUserId = USER_IDENTIFIERS.SLEEPER_USER_ID;
+  
+  if (!userIdentifier) return null;
+  
+  // For Sleeper, check by user ID in ownerId
+  if (dataSource === DATA_SOURCES.SLEEPER) {
+    const teamByUserId = teams.find(team => 
+      team.ownerId === sleeperUserId
+    );
+    if (teamByUserId) {
+      console.log(`Identified user team: ${teamByUserId.name} (User ID: ${sleeperUserId})`);
+      return teamByUserId;
+    }
+  }
+  
+  return teams.find(team => 
+    team.name.toLowerCase().includes(userIdentifier.toLowerCase())
+  ) || null;
 };
 
 // Fetch draft data from Sleeper API
@@ -115,13 +145,23 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
     
     const numberOfTeams = draftData.settings?.teams || 10;
     const slotToRosterId = draftData.slot_to_roster_id || {};
+    const sleeperUserId = USER_IDENTIFIERS.SLEEPER_USER_ID;
     
-    // Create a map of roster IDs to team names
-    const rosterToTeamName = {};
+    // Find the user's draft slot by looking for their user ID in the picks data
+    let userDraftSlot = null;
+    picksData.forEach(pick => {
+      if (pick.picked_by === sleeperUserId) {
+        userDraftSlot = pick.draft_slot;
+        console.log(`Found user's draft slot: ${userDraftSlot} (User ID: ${sleeperUserId})`);
+      }
+    });
+    
+    // Create a map of roster IDs to user IDs (owner_id)
+    const rosterToUserId = {};
     if (rostersData && Array.isArray(rostersData)) {
       rostersData.forEach(roster => {
         if (roster.owner_id && roster.roster_id) {
-          rosterToTeamName[roster.roster_id] = roster.owner_id;
+          rosterToUserId[roster.roster_id] = roster.owner_id;
         }
       });
     }
@@ -140,21 +180,32 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
     const teams = [];
     for (let i = 1; i <= numberOfTeams; i++) {
       const rosterId = slotToRosterId[i] || i;
-      const ownerId = rosterToTeamName[rosterId];
-      const teamName = ownerId && userIdToDisplayName[ownerId] 
+      const ownerId = rosterToUserId[rosterId];
+      let teamName = ownerId && userIdToDisplayName[ownerId] 
         ? userIdToDisplayName[ownerId] 
         : `Team ${rosterId}`;
+      
+      // If this is the user's draft slot, replace the team name with their display name
+      if (userDraftSlot && i === userDraftSlot) {
+        teamName = USER_IDENTIFIERS.SLEEPER;
+        console.log(`Replaced Team ${i} with user's team name: ${teamName}`);
+      }
       
       teams.push({
         id: i,
         rosterId: rosterId,
+        ownerId: ownerId,
         name: teamName,
         picks: [],
-        draftPosition: i
+        draftPosition: i,
+        isUserTeam: userDraftSlot ? (i === userDraftSlot) : false
       });
     }
     
     // Process picks
+    console.log('Sample pick data from Sleeper API:', picksData[0]);
+    console.log('Available pick fields:', Object.keys(picksData[0] || {}));
+    
     const draftedPlayers = picksData.map(pick => {
       const playerName = pick.metadata?.first_name && pick.metadata?.last_name 
         ? `${pick.metadata.first_name} ${pick.metadata.last_name}`
@@ -168,6 +219,7 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
         rank: pick.metadata?.rank || 999,
         tier: pick.metadata?.tier || 5,
         teamId: pick.draft_slot,
+        pickedBy: pick.picked_by || null,
         draftRound: pick.round || 1,
         pickNumber: pick.pick_no
       };
@@ -175,15 +227,39 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
 
     // Add picks to teams
     draftedPlayers.forEach(player => {
-      const team = teams.find(t => t.id === player.teamId);
+      // Try to find team by picked_by field (user ID) first, then fall back to draft_slot
+      let team = null;
+      if (player.pickedBy && player.pickedBy !== "") {
+        // Find team by ownerId (user ID) that matches picked_by
+        team = teams.find(t => t.ownerId === player.pickedBy);
+        if (team) {
+          console.log(`Assigned player ${player.name} to team ${team.name} using picked_by field (user ID: ${player.pickedBy})`);
+        }
+      }
+      if (!team) {
+        team = teams.find(t => t.id === player.teamId);
+        if (team) {
+          console.log(`Assigned player ${player.name} to team ${team.name} using draft_slot fallback`);
+        }
+      }
       if (team) {
         team.picks.push(player);
+      } else {
+        console.warn(`Could not assign player ${player.name} to any team`);
       }
     });
 
     const totalPicks = numberOfTeams * (draftData.settings?.rounds || 15);
     const currentPick = Math.min(picksData.length + 1, totalPicks + 1);
     const isComplete = picksData.length >= totalPicks || draftData.status === 'complete';
+    
+    // Identify user's team using the draft slot we found
+    const userTeam = userDraftSlot ? teams.find(t => t.id === userDraftSlot) : null;
+    if (userTeam) {
+      console.log(`Identified user team: ${userTeam.name} (Draft Slot: ${userDraftSlot})`);
+    } else {
+      console.log('Could not identify user team');
+    }
     
     return {
       currentPick: currentPick,
@@ -198,7 +274,8 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
       leagueName: draftData.metadata?.name || 'Sleeper League',
       draftType: draftData.type || 'snake',
       season: draftData.season || '2025',
-      dataSource: DATA_SOURCES.SLEEPER
+      dataSource: DATA_SOURCES.SLEEPER,
+      userTeam: userTeam
     };
   } catch (error) {
     console.error('Error processing Sleeper draft data:', error);
@@ -297,6 +374,9 @@ export const processGoogleAppsScriptDraftData = (data) => {
     const currentPick = Math.min(draftedPlayers.length + 1, totalPicks + 1);
     const isComplete = draftedPlayers.length >= totalPicks;
     
+    // Identify user's team
+    const userTeam = identifyUserTeam(teams, DATA_SOURCES.GOOGLE_APPS_SCRIPT);
+    
     const result = {
       currentPick: currentPick,
       teams,
@@ -310,7 +390,8 @@ export const processGoogleAppsScriptDraftData = (data) => {
       leagueName: 'Google Apps Script League',
       draftType: 'snake',
       season: '2025',
-      dataSource: DATA_SOURCES.GOOGLE_APPS_SCRIPT
+      dataSource: DATA_SOURCES.GOOGLE_APPS_SCRIPT,
+      userTeam: userTeam
     };
     
     // Final processed result ready
@@ -434,6 +515,9 @@ export const processEnhancedGoogleAppsScriptDraftData = (data) => {
     const currentPick = Math.min(draftedPlayers.length + 1, totalPicks + 1);
     const isComplete = draftedPlayers.length >= totalPicks;
     
+    // Identify user's team
+    const userTeam = identifyUserTeam(processedTeams, DATA_SOURCES.GOOGLE_APPS_SCRIPT);
+    
     return {
       currentPick: currentPick,
       teams: processedTeams,
@@ -447,7 +531,8 @@ export const processEnhancedGoogleAppsScriptDraftData = (data) => {
       leagueName: settings.leagueName || 'Google Apps Script League',
       draftType: settings.draftType || 'snake',
       season: settings.season || '2025',
-      dataSource: DATA_SOURCES.GOOGLE_APPS_SCRIPT
+      dataSource: DATA_SOURCES.GOOGLE_APPS_SCRIPT,
+      userTeam: userTeam
     };
   } catch (error) {
     console.error('Error processing enhanced Google Apps Script draft data:', error);

@@ -128,6 +128,32 @@ const DraftInfo = ({ draftState, currentLeague }) => {
             </span>
           </div>
         </div>
+
+        <div className="info-card">
+          <h3>Team Identification</h3>
+          {draftState.userTeam ? (
+            <div className="info-item">
+              <span className="label">Your Team:</span>
+              <span className="value user-team">{draftState.userTeam.name}</span>
+            </div>
+          ) : (
+            <div className="info-item">
+              <span className="label">Your Team:</span>
+              <span className="value not-found">Not Found</span>
+            </div>
+          )}
+          <div className="info-item">
+            <span className="label">Looking for:</span>
+            <span className="value">
+              {draftState.dataSource === 'sleeper' ? 'CoryPahl' : 'Cory'}
+            </span>
+          </div>
+          {!draftState.userTeam && draftState.dataSource === 'google_apps_script' && (
+            <div className="mock-draft-note">
+              <p>💡 For mock drafts, make sure your team name in the Google Apps Script includes "Cory"</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {draftState.teams.length > 0 && (

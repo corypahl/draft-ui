@@ -1,38 +1,13 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { fetchPlayerData, processPlayerData } from '../services/playerDataService';
+import React, { useMemo } from 'react';
 import './Shortlist.css';
 
-const Shortlist = ({ draftState, currentLeague }) => {
-  const [allPlayers, setAllPlayers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // Fetch player data when league changes
-  useEffect(() => {
-    const loadPlayerData = async () => {
-      if (!currentLeague) return;
-      
-      setIsLoading(true);
-      setError('');
-      
-      try {
-        const rawData = await fetchPlayerData();
-        const processedPlayers = processPlayerData(rawData, currentLeague);
-        setAllPlayers(processedPlayers);
-      } catch (err) {
-        console.error('Error loading player data:', err);
-        setError('Failed to load player data. Please try again.');
-        setAllPlayers([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadPlayerData();
-  }, [currentLeague]);
-
+const Shortlist = ({ draftState, currentLeague, playerData }) => {
   // Filter out drafted players and sort by global rank
   const shortlistPlayers = useMemo(() => {
+    if (!playerData.allPlayers || playerData.allPlayers.length === 0) {
+      return [];
+    }
+
     // Get drafted player names from both Sleeper and Google Apps Script data
     const draftedPlayerNames = draftState.draftedPlayers.map(p => {
       // Handle Sleeper format (metadata.first_name + metadata.last_name)
@@ -44,7 +19,7 @@ const Shortlist = ({ draftState, currentLeague }) => {
     }).filter(name => name); // Remove empty names
     
     // Filter out players who have been drafted
-    const available = allPlayers.filter(player => 
+    const available = playerData.allPlayers.filter(player => 
       !draftedPlayerNames.some(draftedName => 
         player.name.toLowerCase() === draftedName.toLowerCase()
       )
@@ -52,7 +27,7 @@ const Shortlist = ({ draftState, currentLeague }) => {
     
     // Sort by global rank
     return available.sort((a, b) => a.rank - b.rank);
-  }, [draftState.draftedPlayers, allPlayers]);
+  }, [draftState.draftedPlayers, playerData.allPlayers]);
 
   // Calculate position rank for a player
   const getPositionRank = (player, allPlayers) => {
@@ -74,7 +49,7 @@ const Shortlist = ({ draftState, currentLeague }) => {
     return colors[position] || '#718096';
   };
 
-  if (isLoading) {
+  if (playerData.isLoading) {
     return (
       <div className="shortlist">
         <div className="shortlist-header">
@@ -85,13 +60,13 @@ const Shortlist = ({ draftState, currentLeague }) => {
     );
   }
 
-  if (error) {
+  if (playerData.error) {
     return (
       <div className="shortlist">
         <div className="shortlist-header">
           <h3>Shortlist</h3>
         </div>
-        <div className="error-message">{error}</div>
+        <div className="error-message">{playerData.error}</div>
       </div>
     );
   }
@@ -111,19 +86,19 @@ const Shortlist = ({ draftState, currentLeague }) => {
             All players have been drafted!
           </div>
         ) : (
-                     shortlistPlayers.map((player) => {
-             const positionRank = getPositionRank(player, allPlayers);
-             return (
-               <div key={player.id} className="shortlist-item">
-                                   <span 
-                    className="player-info-compact"
-                    style={{ color: getPositionColor(player.position) }}
-                  >
-                    #{player.rank} {player.name} ({player.position}{positionRank})
-                  </span>
-               </div>
-             );
-           })
+          shortlistPlayers.map((player) => {
+            const positionRank = getPositionRank(player, playerData.allPlayers);
+            return (
+              <div key={player.id} className="shortlist-item">
+                <span 
+                  className="player-info-compact"
+                  style={{ color: getPositionColor(player.position) }}
+                >
+                  #{player.rank} {player.name} ({player.position}{positionRank})
+                </span>
+              </div>
+            );
+          })
         )}
       </div>
     </div>

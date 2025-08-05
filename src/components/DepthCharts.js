@@ -1,36 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { fetchPlayerData, processPlayerData } from '../services/playerDataService';
+import React from 'react';
 import './DepthCharts.css';
 
-const DepthCharts = ({ draftState, currentLeague }) => {
-  const [depthChartData, setDepthChartData] = useState([]);
-  const [playerRankings, setPlayerRankings] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // Fetch depth chart data and player rankings when component mounts
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      setError('');
-      
-      try {
-        const rawData = await fetchPlayerData();
-        const depthCharts = rawData['Depth Charts'] || [];
-        const processedPlayers = processPlayerData(rawData, currentLeague);
-        
-        setDepthChartData(depthCharts);
-        setPlayerRankings(processedPlayers);
-      } catch (err) {
-        console.error('Error loading data:', err);
-        setError('Failed to load data. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [currentLeague]);
+const DepthCharts = ({ draftState, currentLeague, playerData }) => {
+  const getTierColor = (tier) => {
+    if (!tier || tier === 0) return '#4a5568'; // Dark grey for no tier
+    if (tier <= 2) return '#3182ce'; // Blue for tiers 1-2
+    if (tier <= 4) return '#38a169'; // Green for tiers 3-4
+    if (tier <= 6) return '#d69e2e'; // Yellow for tiers 5-6
+    if (tier <= 8) return '#dd6b20'; // Orange for tiers 7-8
+    if (tier <= 10) return '#e53e3e'; // Red for tiers 9-10
+    return '#4a5568'; // Dark grey for tiers 11+
+  };
 
   const getPositionColor = (position) => {
     const colors = {
@@ -55,10 +35,14 @@ const DepthCharts = ({ draftState, currentLeague }) => {
   };
 
   const getPlayerRank = (playerName, position) => {
-    const player = playerRankings.find(p => 
+    if (!playerData.allPlayers || playerData.allPlayers.length === 0) {
+      return { rank: '', tier: 0 };
+    }
+    
+    const player = playerData.allPlayers.find(p => 
       p.name === playerName && p.position === position
     );
-    return player ? player.rank : '';
+    return player ? { rank: player.rank, tier: player.tier } : { rank: '', tier: 0 };
   };
 
   const isPlayerDrafted = (playerName) => {
@@ -96,7 +80,7 @@ const DepthCharts = ({ draftState, currentLeague }) => {
     };
   };
 
-  if (isLoading) {
+  if (playerData.isLoading) {
     return (
       <div className="depth-charts">
         <div className="depth-charts-header">
@@ -107,13 +91,13 @@ const DepthCharts = ({ draftState, currentLeague }) => {
     );
   }
 
-  if (error) {
+  if (playerData.error) {
     return (
       <div className="depth-charts">
         <div className="depth-charts-header">
           <h2>Depth Charts</h2>
         </div>
-        <div className="error-message">{error}</div>
+        <div className="error-message">{playerData.error}</div>
       </div>
     );
   }
@@ -121,129 +105,99 @@ const DepthCharts = ({ draftState, currentLeague }) => {
   return (
     <div className="depth-charts">
       <div className="depth-charts-header">
-        <h2>Depth Charts</h2>
-        <div className="charts-count">
-          {depthChartData.length} teams
-        </div>
+        <h2>Depth Charts - {currentLeague}</h2>
       </div>
 
-      {depthChartData.length > 0 ? (
-        <div className="depth-charts-table-container">
+      <div className="depth-charts-container">
+        {playerData.depthChartData.length === 0 ? (
+          <div className="no-data">No depth chart data available</div>
+        ) : (
           <table className="depth-charts-table">
             <thead>
               <tr>
                 <th className="team-header">Team</th>
-                <th className="position-header">QB</th>
-                <th className="position-header">WR</th>
-                <th className="position-header">TE</th>
-                <th className="position-header">RB</th>
+                <th>QB</th>
+                <th>RB</th>
+                <th>WR</th>
+                <th>TE</th>
               </tr>
             </thead>
             <tbody>
-              {depthChartData.map((team, index) => {
+              {playerData.depthChartData.map((team, index) => {
                 const processedTeam = processTeamDepthChart(team);
-                
                 return (
-                  <tr key={index} className="team-row">
+                  <tr key={index}>
                     <td className="team-name-cell">
-                      <span className="team-name">{processedTeam.teamName}</span>
+                      {processedTeam.teamName}
                     </td>
-                    <td className="position-cell">
-                      {processedTeam.positions['QB'].map((player, playerIndex) => {
+                    <td>
+                      {processedTeam.positions.QB.map((player, playerIndex) => {
+                        const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
-                        const playerRank = getPlayerRank(player.name, 'QB');
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            style={{ 
+                              color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
+                              textDecoration: isDrafted ? 'line-through' : 'none'
+                            }}
                           >
-                            <span 
-                              className="player-name"
-                              style={{ color: getPositionColor('QB') }}
-                            >
-                              {player.name}
-                            </span>
-                            <span 
-                              className="position-rank"
-                              style={{ color: getPositionColor('QB') }}
-                            >
-                              #{playerRank}
-                            </span>
+                            #{playerInfo.rank} {player.name}
                           </div>
                         );
                       })}
                     </td>
-                    <td className="position-cell">
-                      {processedTeam.positions['WR'].map((player, playerIndex) => {
+                    <td>
+                      {processedTeam.positions.RB.map((player, playerIndex) => {
+                        const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
-                        const playerRank = getPlayerRank(player.name, 'WR');
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            style={{ 
+                              color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
+                              textDecoration: isDrafted ? 'line-through' : 'none'
+                            }}
                           >
-                            <span 
-                              className="player-name"
-                              style={{ color: getPositionColor('WR') }}
-                            >
-                              {player.name}
-                            </span>
-                            <span 
-                              className="position-rank"
-                              style={{ color: getPositionColor('WR') }}
-                            >
-                              #{playerRank}
-                            </span>
+                            #{playerInfo.rank} {player.name}
                           </div>
                         );
                       })}
                     </td>
-                    <td className="position-cell">
-                      {processedTeam.positions['TE'].map((player, playerIndex) => {
+                    <td>
+                      {processedTeam.positions.WR.map((player, playerIndex) => {
+                        const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
-                        const playerRank = getPlayerRank(player.name, 'TE');
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            style={{ 
+                              color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
+                              textDecoration: isDrafted ? 'line-through' : 'none'
+                            }}
                           >
-                            <span 
-                              className="player-name"
-                              style={{ color: getPositionColor('TE') }}
-                            >
-                              {player.name}
-                            </span>
-                            <span 
-                              className="position-rank"
-                              style={{ color: getPositionColor('TE') }}
-                            >
-                              #{playerRank}
-                            </span>
+                            #{playerInfo.rank} {player.name}
                           </div>
                         );
                       })}
                     </td>
-                    <td className="position-cell">
-                      {processedTeam.positions['RB'].map((player, playerIndex) => {
+                    <td>
+                      {processedTeam.positions.TE.map((player, playerIndex) => {
+                        const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
-                        const playerRank = getPlayerRank(player.name, 'RB');
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            style={{ 
+                              color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
+                              textDecoration: isDrafted ? 'line-through' : 'none'
+                            }}
                           >
-                            <span 
-                              className="player-name"
-                              style={{ color: getPositionColor('RB') }}
-                            >
-                              {player.name}
-                            </span>
-                            <span 
-                              className="position-rank"
-                              style={{ color: getPositionColor('RB') }}
-                            >
-                              #{playerRank}
-                            </span>
+                            #{playerInfo.rank} {player.name}
                           </div>
                         );
                       })}
@@ -253,13 +207,8 @@ const DepthCharts = ({ draftState, currentLeague }) => {
               })}
             </tbody>
           </table>
-        </div>
-      ) : (
-        <div className="no-data">
-          <p>No depth chart data available</p>
-          <p className="subtitle">Depth charts will appear here when data is loaded</p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

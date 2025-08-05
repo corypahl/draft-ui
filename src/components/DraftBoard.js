@@ -123,9 +123,6 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
               {draftState.teams.map((team, index) => (
                 <div key={team.id} className="team-header">
                   <div className="team-name-header">{team.name}</div>
-                  {team.draftPosition && (
-                    <div className="draft-position-header">#{team.draftPosition}</div>
-                  )}
                 </div>
               ))}
             </div>

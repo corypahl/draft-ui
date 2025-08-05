@@ -205,24 +205,18 @@
 .player-item {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s ease;
-  gap: 0.5rem;
-  position: relative;
+  cursor: pointer;
 }
 
 .player-item:hover {
-  background-color: var(--bg-tertiary);
+  background: var(--bg-tertiary);
 }
 
 .player-item:last-child {
   border-bottom: none;
-}
-
-.player-item.tier-end {
-  border-bottom-color: #e53e3e;
-  border-bottom-width: 1px;
 }
 
 .tier-section {

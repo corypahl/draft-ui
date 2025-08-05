@@ -1,0 +1,206 @@
+/* My Team Component Styles */
+.my-team {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+}
+
+.my-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.my-team-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.team-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.draft-position {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.players-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.no-team-message {
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.no-team-message p {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.no-team-message ul {
+  text-align: left;
+  display: inline-block;
+  margin: 1rem 0;
+}
+
+.no-team-message li {
+  margin: 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.no-team-message strong {
+  color: var(--accent-blue);
+}
+
+.team-roster {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.no-players-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.roster-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
+}
+
+.roster-player:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.player-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.player-position {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--bg-tertiary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.player-team {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.draft-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.draft-round {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
+.pick-number {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .my-team-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .team-info {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .roster-player {
+    padding: 0.6rem;
+  }
+  
+  .player-info {
+    gap: 0.5rem;
+  }
+  
+  .player-name {
+    font-size: 0.9rem;
+  }
+  
+  .player-position {
+    font-size: 0.75rem;
+    min-width: 1.8rem;
+  }
+  
+  .player-team {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .draft-info {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+} 
