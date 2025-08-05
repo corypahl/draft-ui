@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LeagueSelector.css';
+import { fetchAndProcessDraftData, DATA_SOURCES } from '../services/draftDataService';
 
 const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
   const [selectedLeague, setSelectedLeague] = useState('FanDuel');
+  const [dataSource, setDataSource] = useState(DATA_SOURCES.SLEEPER);
   const [draftId, setDraftId] = useState('1256013847173550080'); // Default to example draft ID
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +21,7 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
 
   // Handle auto-refresh functionality
   useEffect(() => {
-    if (autoRefresh && draftId.trim()) {
+    if (autoRefresh && (dataSource === DATA_SOURCES.GOOGLE_APPS_SCRIPT || draftId.trim())) {
       // Clear any existing interval
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -46,12 +48,17 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [autoRefresh, refreshInterval, draftId]);
+  }, [autoRefresh, refreshInterval, draftId, dataSource]);
 
   const handleLeagueChange = (leagueId) => {
     setSelectedLeague(leagueId);
     setError('');
     onLeagueChange(leagueId);
+  };
+
+  const handleDataSourceChange = (e) => {
+    setDataSource(e.target.value);
+    setError('');
   };
 
   const handleDraftIdChange = (e) => {
@@ -71,8 +78,9 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
   };
 
   const fetchDraftData = async () => {
-    if (!draftId.trim()) {
-      setError('Please enter a draft ID');
+    // Validate input based on data source
+    if (dataSource === DATA_SOURCES.SLEEPER && !draftId.trim()) {
+      setError('Please enter a draft ID for Sleeper API');
       return;
     }
 
@@ -80,36 +88,10 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     setError('');
 
     try {
-      console.log('Fetching draft data for ID:', draftId);
+      console.log('Fetching draft data from:', dataSource);
       
-      // Fetch draft data from Sleeper API
-      const draftResponse = await fetch(`https://api.sleeper.app/v1/draft/${draftId}`);
-      console.log('Draft response status:', draftResponse.status);
-      
-      if (!draftResponse.ok) {
-        const errorText = await draftResponse.text();
-        console.error('Draft API error:', errorText);
-        throw new Error(`Draft not found (${draftResponse.status}). Please check your draft ID.`);
-      }
-      
-      const draftData = await draftResponse.json();
-      console.log('Draft data:', draftData);
-
-      // Fetch draft picks
-      const picksResponse = await fetch(`https://api.sleeper.app/v1/draft/${draftId}/picks`);
-      console.log('Picks response status:', picksResponse.status);
-      
-      if (!picksResponse.ok) {
-        const errorText = await picksResponse.text();
-        console.error('Picks API error:', errorText);
-        throw new Error(`Unable to fetch draft picks (${picksResponse.status}).`);
-      }
-      
-      const picksData = await picksResponse.json();
-      console.log('Picks data:', picksData);
-
-      // Process the data without league info
-      const processedData = processDraftData(draftData, picksData);
+      // Use the new unified service
+      const processedData = await fetchAndProcessDraftData(dataSource, draftId);
       console.log('Processed data:', processedData);
       
       onDraftDataUpdate(processedData);
@@ -123,91 +105,7 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     }
   };
 
-  const processDraftData = (draftData, picksData) => {
-    try {
-      console.log('Processing draft data with settings:', draftData.settings);
-      
-      // Get number of teams from draft settings
-      const numberOfTeams = draftData.settings?.teams || 10;
-      console.log('Number of teams:', numberOfTeams);
-      
-      // Use slot_to_roster_id mapping if available, otherwise create generic teams
-      const slotToRosterId = draftData.slot_to_roster_id || {};
-      console.log('Slot to roster mapping:', slotToRosterId);
-      
-      // Create teams based on the actual draft structure
-      const teams = [];
-      for (let i = 1; i <= numberOfTeams; i++) {
-        const rosterId = slotToRosterId[i] || i;
-        teams.push({
-          id: i, // Use slot number as team ID
-          rosterId: rosterId,
-          name: `Team ${rosterId}`,
-          picks: [],
-          draftPosition: i
-        });
-      }
-      
-      console.log('Teams created:', teams);
 
-      // Process picks
-      const draftedPlayers = picksData.map(pick => {
-        const playerName = pick.metadata?.first_name && pick.metadata?.last_name 
-          ? `${pick.metadata.first_name} ${pick.metadata.last_name}`
-          : 'Unknown Player';
-          
-        return {
-          id: pick.player_id,
-          name: playerName,
-          position: pick.metadata?.position || 'UNK',
-          team: pick.metadata?.team || 'UNK',
-          rank: pick.metadata?.rank || 999,
-          tier: pick.metadata?.tier || 5,
-          teamId: pick.draft_slot, // Use draft_slot as team ID
-          draftRound: pick.round || 1,
-          pickNumber: pick.pick_no
-        };
-      });
-
-      console.log('Drafted players:', draftedPlayers);
-
-      // Add picks to teams
-      draftedPlayers.forEach(player => {
-        const team = teams.find(t => t.id === player.teamId);
-        if (team) {
-          team.picks.push(player);
-        }
-      });
-
-      // Calculate current pick correctly
-      const totalPicks = numberOfTeams * (draftData.settings?.rounds || 15);
-      const currentPick = Math.min(picksData.length + 1, totalPicks + 1);
-      
-      // Determine if draft is complete
-      const isComplete = picksData.length >= totalPicks || draftData.status === 'complete';
-      
-      const result = {
-        currentPick: currentPick,
-        teams,
-        draftedPlayers,
-        availablePlayers: [], // Will be populated with remaining players
-        draftStatus: isComplete ? 'complete' : draftData.status || 'in_progress',
-        totalRounds: draftData.settings?.rounds || 15,
-        totalTeams: numberOfTeams,
-        totalPicks: totalPicks,
-        picksRemaining: Math.max(0, totalPicks - picksData.length),
-        leagueName: draftData.metadata?.name || 'Sleeper League',
-        draftType: draftData.type || 'snake',
-        season: draftData.season || '2025'
-      };
-
-      console.log('Final processed data:', result);
-      return result;
-    } catch (err) {
-      console.error('Error in processDraftData:', err);
-      throw new Error('Error processing draft data: ' + err.message);
-    }
-  };
 
   return (
     <div className="league-selector">
@@ -227,17 +125,31 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
           </select>
         </div>
 
-        <div className="draft-id-input">
-          <label htmlFor="draft-id">Draft ID:</label>
-          <input
-            id="draft-id"
-            type="text"
-            placeholder="Enter Sleeper draft ID..."
-            value={draftId}
-            onChange={handleDraftIdChange}
-            onKeyPress={(e) => e.key === 'Enter' && fetchDraftData()}
-          />
+        <div className="data-source-dropdown">
+          <label htmlFor="data-source-select">Data Source:</label>
+          <select
+            id="data-source-select"
+            value={dataSource}
+            onChange={handleDataSourceChange}
+          >
+            <option value={DATA_SOURCES.SLEEPER}>Sleeper API</option>
+            <option value={DATA_SOURCES.GOOGLE_APPS_SCRIPT}>Google Apps Script</option>
+          </select>
         </div>
+
+        {dataSource === DATA_SOURCES.SLEEPER && (
+          <div className="draft-id-input">
+            <label htmlFor="draft-id">Draft ID:</label>
+            <input
+              id="draft-id"
+              type="text"
+              placeholder="Enter Sleeper draft ID..."
+              value={draftId}
+              onChange={handleDraftIdChange}
+              onKeyPress={(e) => e.key === 'Enter' && fetchDraftData()}
+            />
+          </div>
+        )}
 
         <div className="refresh-interval-input">
           <label htmlFor="refresh-interval">Refresh (sec):</label>
@@ -267,7 +179,7 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
           onClick={fetchDraftData}
           disabled={isLoading}
         >
-          {isLoading ? 'Loading...' : 'Fetch Draft'}
+          {isLoading ? 'Loading...' : `Fetch ${dataSource === DATA_SOURCES.SLEEPER ? 'Sleeper' : 'Google Apps Script'} Draft`}
         </button>
       </div>
 
@@ -285,7 +197,7 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
 
       {isLoading && (
         <div className="loading-message">
-          Fetching draft data from Sleeper...
+          Fetching draft data from {dataSource === DATA_SOURCES.SLEEPER ? 'Sleeper' : 'Google Apps Script'}...
         </div>
       )}
     </div>

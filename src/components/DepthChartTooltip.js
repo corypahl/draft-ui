@@ -6,7 +6,7 @@ const DepthChartTooltip = ({ depthChartData, isVisible, position }) => {
     return null;
   }
 
-  const positions = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+  const positions = ['QB', 'RB', 'WR', 'TE', 'K', 'D'];
   
   const getPositionPlayers = (position) => {
     return depthChartData.filter(player => player.position === position);

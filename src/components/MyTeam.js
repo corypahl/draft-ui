@@ -2,13 +2,7 @@ import React from 'react';
 import './MyTeam.css';
 
 const MyTeam = ({ draftState, currentLeague }) => {
-  // This is a placeholder - you'll need to identify which team is "mine"
-  // For now, I'll show all drafted players or you can pass a specific team ID
-  const getMyTeamPlayers = () => {
-    // This is a simplified approach - you might need to adjust based on your data structure
-    // You could pass a specific team ID or user ID to identify "my team"
-    return draftState.draftedPlayers || [];
-  };
+  const { userTeam } = draftState;
 
   const getPositionColor = (position) => {
     const colors = {
@@ -17,105 +11,74 @@ const MyTeam = ({ draftState, currentLeague }) => {
       'WR': '#3182ce',
       'TE': '#805ad5',
       'K': '#d69e2e',
-      'DEF': '#dd6b20'
+      'D': '#dd6b20'
     };
     return colors[position] || '#718096';
   };
 
-  const groupPlayersByPosition = (players) => {
-    const grouped = {
-      'QB': [],
-      'RB': [],
-      'WR': [],
-      'TE': [],
-      'K': [],
-      'DEF': []
-    };
+  if (!userTeam) {
+    return (
+      <div className="my-team">
+        <div className="my-team-header">
+          <h2>My Team</h2>
+        </div>
+        <div className="no-team-message">
+          <p>Your team could not be identified in this league.</p>
+          <p>Make sure your username matches one of these:</p>
+          <ul>
+            <li>Sleeper: <strong>CoryPahl</strong></li>
+            <li>Google Apps Script: <strong>Cory</strong></li>
+          </ul>
+          <p>For mock drafts, you can manually set your team name in the Google Apps Script.</p>
+        </div>
+      </div>
+    );
+  }
 
-    players.forEach(player => {
-      const position = player.position || player.metadata?.position;
-      if (grouped[position]) {
-        grouped[position].push(player);
-      }
-    });
-
-    return grouped;
-  };
-
-  const myPlayers = getMyTeamPlayers();
-  const playersByPosition = groupPlayersByPosition(myPlayers);
+  // Sort players by draft round and pick number
+  const sortedPlayers = [...userTeam.picks].sort((a, b) => {
+    if (a.draftRound !== b.draftRound) {
+      return a.draftRound - b.draftRound;
+    }
+    return a.pickNumber - b.pickNumber;
+  });
 
   return (
     <div className="my-team">
       <div className="my-team-header">
-        <h2>My Team</h2>
-        <div className="team-count">
-          {myPlayers.length} players
+        <h2>My Team - {userTeam.name}</h2>
+        <div className="team-info">
+          <span className="draft-position">Draft Position: {userTeam.draftPosition}</span>
+          <span className="players-count">{userTeam.picks.length} players drafted</span>
         </div>
       </div>
 
       <div className="team-roster">
-        {myPlayers.length > 0 ? (
-          Object.entries(playersByPosition).map(([position, players]) => {
-            if (players.length === 0) return null;
-            
-            return (
-              <div key={position} className="position-group">
-                <div className="position-header">
-                  <span className="position-label">{position}</span>
-                  <span className="position-count">({players.length})</span>
+        {sortedPlayers.length === 0 ? (
+          <div className="no-players-message">
+            <p>No players drafted yet.</p>
+          </div>
+        ) : (
+          <div className="players-list">
+            {sortedPlayers.map((player) => (
+              <div key={player.id} className="roster-player">
+                <div className="player-info">
+                  <span className="player-name" style={{ color: getPositionColor(player.position) }}>
+                    {player.name}
+                  </span>
+                  <span className="player-position" style={{ color: getPositionColor(player.position) }}>
+                    {player.position}
+                  </span>
+                  <span className="player-team">{player.team}</span>
                 </div>
-                <div className="position-players">
-                  {players.map((player, index) => (
-                    <div key={index} className="roster-player">
-                      <div className="player-info">
-                        <span className="player-name">
-                          {player.metadata?.first_name && player.metadata?.last_name 
-                            ? `${player.metadata.first_name} ${player.metadata.last_name}`
-                            : player.metadata?.name || player.name || 'Unknown Player'
-                          }
-                        </span>
-                        <span className="player-team">
-                          {player.metadata?.team || player.team || ''}
-                        </span>
-                      </div>
-                      <div className="player-meta">
-                        {player.metadata?.search_rank && (
-                          <span className="player-rank">#{player.metadata.search_rank}</span>
-                        )}
-                        {player.metadata?.adp && (
-                          <span className="player-adp">ADP: {player.metadata.adp}</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                <div className="draft-info">
+                  <span className="draft-round">R{player.draftRound}</span>
+                  <span className="pick-number">#{player.pickNumber}</span>
                 </div>
               </div>
-            );
-          })
-        ) : (
-          <div className="no-players">
-            <p>No players drafted yet</p>
-            <p className="subtitle">Your drafted players will appear here</p>
+            ))}
           </div>
         )}
-      </div>
-
-      <div className="team-summary">
-        <div className="summary-item">
-          <span className="summary-label">Total Players:</span>
-          <span className="summary-value">{myPlayers.length}</span>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">Positions:</span>
-          <span className="summary-value">
-            {Object.entries(playersByPosition).filter(([pos, players]) => players.length > 0).length}
-          </span>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">League:</span>
-          <span className="summary-value">{currentLeague}</span>
-        </div>
       </div>
     </div>
   );
