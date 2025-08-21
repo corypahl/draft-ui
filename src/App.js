@@ -4,6 +4,7 @@ import LeagueSelector from './components/LeagueSelector';
 import PlayerList from './components/PlayerList';
 import DraftBoard from './components/DraftBoard';
 import DepthCharts from './components/DepthCharts';
+import PlayerCardContainer from './components/PlayerCardContainer';
 
 import MyTeam from './components/MyTeam';
 import Shortlist from './components/Shortlist';
@@ -23,6 +24,9 @@ function App() {
     leagueName: ''
   });
   const [activeTab, setActiveTab] = useState('players'); // 'players', 'draft-board', 'my-team', 'advanced-recommendations'
+  
+  // Selected players for player cards (max 3)
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
   
   // Global player data state for performance optimization
   const [playerData, setPlayerData] = useState({
@@ -85,6 +89,24 @@ function App() {
     setDraftState(newDraftData);
   };
 
+  const handleAddPlayer = (player) => {
+    // Check if player is already selected
+    if (selectedPlayers.find(p => p.id === player.id)) {
+      return;
+    }
+    
+    // Check if we already have 4 players
+    if (selectedPlayers.length >= 4) {
+      return;
+    }
+    
+    setSelectedPlayers(prev => [...prev, player]);
+  };
+
+  const handleRemovePlayer = (playerId) => {
+    setSelectedPlayers(prev => prev.filter(p => p.id !== playerId));
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'players':
@@ -94,6 +116,7 @@ function App() {
             draftState={draftState}
             currentLeague={currentLeague}
             playerData={playerData}
+            onPlayerClick={handleAddPlayer}
           />
         );
       case 'draft-board':
@@ -102,6 +125,7 @@ function App() {
             draftState={draftState}
             setDraftState={setDraftState}
             currentLeague={currentLeague}
+            onPlayerClick={handleAddPlayer}
           />
         );
       case 'my-team':
@@ -110,6 +134,7 @@ function App() {
             draftState={draftState}
             currentLeague={currentLeague}
             playerData={playerData}
+            onPlayerClick={handleAddPlayer}
           />
         );
       case 'depth-charts':
@@ -118,6 +143,7 @@ function App() {
             draftState={draftState}
             currentLeague={currentLeague}
             playerData={playerData}
+            onPlayerClick={handleAddPlayer}
           />
         );
       case 'advanced-recommendations':
@@ -125,6 +151,7 @@ function App() {
           <AdvancedRecommendations
             draftState={draftState}
             allPlayers={playerData.allPlayers}
+            onPlayerClick={handleAddPlayer}
           />
         );
       default:
@@ -134,6 +161,7 @@ function App() {
             draftState={draftState}
             currentLeague={currentLeague}
             playerData={playerData}
+            onPlayerClick={handleAddPlayer}
           />
         );
     }
@@ -185,6 +213,11 @@ function App() {
             📊 Depth Charts
           </button>
         </div>
+
+        <PlayerCardContainer
+          selectedPlayers={selectedPlayers}
+          onRemovePlayer={handleRemovePlayer}
+        />
 
         <div className="main-content">
           <div className="draft-container">

@@ -2,7 +2,7 @@ import React from 'react';
 import './MyTeam.css';
 import TeamAnalysis from './TeamAnalysis';
 
-const MyTeam = ({ draftState, currentLeague, playerData }) => {
+const MyTeam = ({ draftState, currentLeague, playerData, onPlayerClick }) => {
   const { userTeam } = draftState;
 
   const getPositionColor = (position) => {
@@ -73,7 +73,12 @@ const MyTeam = ({ draftState, currentLeague, playerData }) => {
           ) : (
             <div className="players-list">
                              {sortedPlayers.map((player) => (
-                 <div key={player.id} className="roster-player">
+                 <div 
+                   key={player.id} 
+                   className="roster-player"
+                   onClick={() => onPlayerClick && onPlayerClick(player)}
+                   style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
+                 >
                    <div className="player-info">
                      <span className="draft-info-inline">
                        R{player.draftRound} #{player.pickNumber}

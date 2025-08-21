@@ -1,7 +1,7 @@
 import React from 'react';
 import './DepthCharts.css';
 
-const DepthCharts = ({ draftState, currentLeague, playerData }) => {
+const DepthCharts = ({ draftState, currentLeague, playerData, onPlayerClick }) => {
   const getTierColor = (tier) => {
     if (!tier || tier === 0) return '#4a5568'; // Dark grey for no tier
     if (tier <= 2) return '#3182ce'; // Blue for tiers 1-2
@@ -138,9 +138,11 @@ const DepthCharts = ({ draftState, currentLeague, playerData }) => {
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            onClick={() => onPlayerClick && onPlayerClick(player)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
-                              textDecoration: isDrafted ? 'line-through' : 'none'
+                              textDecoration: isDrafted ? 'line-through' : 'none',
+                              cursor: onPlayerClick ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}
@@ -156,9 +158,11 @@ const DepthCharts = ({ draftState, currentLeague, playerData }) => {
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            onClick={() => onPlayerClick && onPlayerClick(player)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
-                              textDecoration: isDrafted ? 'line-through' : 'none'
+                              textDecoration: isDrafted ? 'line-through' : 'none',
+                              cursor: onPlayerClick ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}
@@ -174,9 +178,11 @@ const DepthCharts = ({ draftState, currentLeague, playerData }) => {
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            onClick={() => onPlayerClick && onPlayerClick(player)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
-                              textDecoration: isDrafted ? 'line-through' : 'none'
+                              textDecoration: isDrafted ? 'line-through' : 'none',
+                              cursor: onPlayerClick ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}
@@ -192,9 +198,11 @@ const DepthCharts = ({ draftState, currentLeague, playerData }) => {
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
+                            onClick={() => onPlayerClick && onPlayerClick(player)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
-                              textDecoration: isDrafted ? 'line-through' : 'none'
+                              textDecoration: isDrafted ? 'line-through' : 'none',
+                              cursor: onPlayerClick ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}

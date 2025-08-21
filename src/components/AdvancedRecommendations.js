@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import './AdvancedRecommendations.css';
 
-const AdvancedRecommendations = ({ draftState, allPlayers }) => {
+const AdvancedRecommendations = ({ draftState, allPlayers, onPlayerClick }) => {
   const recommendations = useMemo(() => {
     if (!draftState.userTeam || !allPlayers) {
       return null;
@@ -197,7 +197,13 @@ const AdvancedRecommendations = ({ draftState, allPlayers }) => {
                         >
                           {target.position}
                         </span>
-                        <span className="target-name">{target.name}</span>
+                        <span 
+                          className="target-name"
+                          onClick={() => onPlayerClick && onPlayerClick(target)}
+                          style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
+                        >
+                          {target.name}
+                        </span>
                         <span className="target-rank">#{target.rank}</span>
                       </div>
                     ))}

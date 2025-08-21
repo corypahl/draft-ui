@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import './PlayerList.css';
 
-const PlayerList = ({ availablePlayers, draftState, currentLeague, playerData }) => {
+const PlayerList = ({ availablePlayers, draftState, currentLeague, playerData, onPlayerClick }) => {
   const [visiblePositions, setVisiblePositions] = useState({
     'QB': true,
     'RB': true,
@@ -158,6 +158,8 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague, playerData })
                         <div
                           key={player.id}
                           className="player-item"
+                          onClick={() => onPlayerClick && onPlayerClick(player)}
+                          style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
                         >
                           <div className="player-rank" style={{ color: getTierColor(player.tier) }}>
                             #{player.rank}

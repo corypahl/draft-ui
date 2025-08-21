@@ -1,0 +1,39 @@
+.player-card-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .player-card-container {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .player-cards-wrapper {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-card-container {
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .player-cards-wrapper {
+    gap: 4px;
+  }
+}

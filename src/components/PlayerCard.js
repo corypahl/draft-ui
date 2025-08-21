@@ -1,200 +1,112 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './PlayerCard.css';
 
-const PlayerCard = ({ player, isDrafted = false, draftRound = null, pickNumber = null, onAddToShortlist, onRemoveFromShortlist, inShortlist = false }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+const PlayerCard = ({ player, onRemove }) => {
   const getPositionColor = (position) => {
     const colors = {
-      'QB': '#e53e3e',
-      'RB': '#38a169',
-      'WR': '#3182ce',
-      'TE': '#805ad5',
-      'K': '#d69e2e',
-      'D': '#dd6b20'
+      'QB': '#e53e3e', // Red
+      'RB': '#38a169', // Green
+      'WR': '#3182ce', // Blue
+      'TE': '#805ad5', // Purple
+      'K': '#d69e2e',  // Yellow
+      'D': '#dd6b20',  // Orange
+      'UNK': '#718096' // Gray
     };
-    return colors[position] || '#718096';
+    return colors[position] || colors['UNK'];
   };
 
   const getTierColor = (tier) => {
-    if (tier <= 3) return '#38a169';
-    if (tier <= 6) return '#d69e2e';
-    return '#e53e3e';
+    if (!tier || tier === 0) return '#4a5568'; // Dark grey for no tier
+    if (tier <= 2) return '#3182ce'; // Blue for tiers 1-2
+    if (tier <= 4) return '#38a169'; // Green for tiers 3-4
+    if (tier <= 6) return '#d69e2e'; // Yellow for tiers 5-6
+    if (tier <= 8) return '#dd6b20'; // Orange for tiers 7-8
+    if (tier <= 10) return '#e53e3e'; // Red for tiers 9-10
+    return '#4a5568'; // Dark grey for tiers 11+
   };
 
-  const getValueColor = (rank, adp) => {
-    if (!rank || !adp) return '#718096';
-    const diff = adp - rank;
-    if (diff >= 20) return '#38a169';
-    if (diff >= 10) return '#d69e2e';
-    if (diff <= -10) return '#e53e3e';
-    return '#718096';
+  const formatValue = (value) => {
+    if (value === null || value === undefined || value === '') return 'N/A';
+    if (typeof value === 'number') return value.toString();
+    return value;
   };
 
-  const getRiskColor = (risk) => {
-    if (!risk) return '#718096';
-    const riskLower = risk.toLowerCase();
-    if (riskLower.includes('high') || riskLower.includes('red')) return '#e53e3e';
-    if (riskLower.includes('medium') || riskLower.includes('yellow')) return '#d69e2e';
-    return '#38a169';
-  };
-
-  const formatValue = (rank, adp) => {
-    if (!rank || !adp) return 'N/A';
-    const diff = adp - rank;
-    if (diff > 0) return `+${diff}`;
-    if (diff < 0) return `${diff}`;
-    return '0';
-  };
-
-  const handleShortlistToggle = (e) => {
-    e.stopPropagation();
-    if (inShortlist) {
-      onRemoveFromShortlist(player);
-    } else {
-      onAddToShortlist(player);
-    }
+  const renderStatRow = (label, value, color = null, className = '') => {
+    if (value === null || value === undefined || value === '') return null;
+    return (
+      <div className={`stat-row ${className}`}>
+        <span className="stat-label">{label}:</span>
+        <span className="stat-value" style={color ? { color } : {}}>
+          {formatValue(value)}
+        </span>
+      </div>
+    );
   };
 
   return (
-    <div className={`player-card ${isDrafted ? 'drafted' : ''} ${isExpanded ? 'expanded' : ''}`}>
-      {/* Main Card Content */}
-      <div className="card-header" onClick={() => setIsExpanded(!isExpanded)}>
+    <div className="player-card">
+      <div className="player-card-header">
         <div className="player-main-info">
-          <div className="rank-section">
-            <div className="rank-number">#{player.rank || 'N/A'}</div>
-            <div className="tier-badge" style={{ backgroundColor: getTierColor(player.tier) }}>
-              T{player.tier || '?'}
-            </div>
-          </div>
-          
-          <div className="player-info">
-            <div className="player-name">{player.name}</div>
-            <div className="player-details">
-              <span 
-                className="player-position"
-                style={{ color: getPositionColor(player.position) }}
-              >
-                {player.position}
-              </span>
-              <span className="player-team">{player.team}</span>
-              {player.bye && <span className="bye-week">Bye: {player.bye}</span>}
-            </div>
-          </div>
-
-          <div className="card-actions">
-            <button 
-              className={`shortlist-btn ${inShortlist ? 'in-shortlist' : ''}`}
-              onClick={handleShortlistToggle}
-              title={inShortlist ? 'Remove from shortlist' : 'Add to shortlist'}
-            >
-              {inShortlist ? '★' : '☆'}
-            </button>
-            <div className="expand-icon">{isExpanded ? '−' : '+'}</div>
+          <div className="player-name">{player.name}</div>
+          <div className="player-position" style={{ backgroundColor: getPositionColor(player.position) }}>
+            {player.position}
           </div>
         </div>
+        <button className="remove-player-btn" onClick={() => onRemove(player.id)}>
+          ×
+        </button>
+      </div>
+      
+      <div className="player-stats">
+        {/* Info Section */}
+        <div className="stats-section">
+          <div className="section-title">Info</div>
+          {renderStatRow('Team', player.team)}
+          {renderStatRow('Bye', player.bye)}
+        </div>
 
-        {/* Draft Info */}
-        {isDrafted && (
-          <div className="draft-info">
-            <span className="draft-round">R{draftRound}</span>
-            <span className="pick-number">#{pickNumber}</span>
+        {/* Outlook Section */}
+        <div className="stats-section">
+          <div className="section-title">Outlook</div>
+          {renderStatRow('Tier', player.tier, getTierColor(player.tier))}
+          {renderStatRow('Overall Rank', player.rank, getTierColor(player.tier))}
+          {renderStatRow('Position Rank', player.positionalRank)}
+          {renderStatRow('Proj Points', player.projectedPoints)}
+          {renderStatRow('ADP', player.adp)}
+          {renderStatRow('Upside', player.upside)}
+          {renderStatRow('Risk', player.risk)}
+        </div>
+
+        {/* History Section */}
+        <div className="stats-section">
+          <div className="section-title">History</div>
+          {renderStatRow('Prev Rank', player.Prev_Rank || player['Prev_Rank'])}
+          {renderStatRow('Prev Points', player.Prev_Pts || player['Prev_Pts'])}
+          {renderStatRow('Boom', player.boom)}
+          {renderStatRow('Bust', player.bust)}
+        </div>
+
+        {/* Injury Status Section */}
+        {player.injury && (
+          <div className="stats-section injury-section">
+            <div className="section-title">Injury Status</div>
+            {renderStatRow('Injury', player.injury, '#e53e3e')}
+            {renderStatRow('Status', player.injuryStatus)}
+          </div>
+        )}
+
+        {/* Rookie Info - Show if applicable */}
+        {player.isRookie && (
+          <div className="stats-section">
+            <div className="section-title">Rookie Info</div>
+            {renderStatRow('College', player.college)}
+            {renderStatRow('Draft Round', player.draftRound)}
+            {renderStatRow('Draft Pick', player.draftPick)}
           </div>
         )}
       </div>
-
-      {/* Quick Stats Row */}
-      <div className="quick-stats">
-        <div className="stat-item">
-          <span className="stat-label">ADP</span>
-          <span className="stat-value">{player.adp || 'N/A'}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-label">Proj</span>
-          <span className="stat-value">{player.projectedPoints ? Math.round(player.projectedPoints) : 'N/A'}</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-label">Value</span>
-          <span 
-            className="stat-value value-indicator"
-            style={{ color: getValueColor(player.rank, player.adp) }}
-          >
-            {formatValue(player.rank, player.adp)}
-          </span>
-        </div>
-      </div>
-
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="expanded-content">
-          <div className="detailed-stats">
-            <div className="stat-row">
-              <span className="stat-label">Risk Level:</span>
-              <span 
-                className="stat-value risk-indicator"
-                style={{ color: getRiskColor(player.risk) }}
-              >
-                {player.risk || 'Unknown'}
-              </span>
-            </div>
-            
-            {player.upside && (
-              <div className="stat-row">
-                <span className="stat-label">Upside:</span>
-                <span className="stat-value">{player.upside}</span>
-              </div>
-            )}
-            
-            {player.boom && (
-              <div className="stat-row">
-                <span className="stat-label">Boom:</span>
-                <span className="stat-value">{player.boom}</span>
-              </div>
-            )}
-            
-            {player.bust && (
-              <div className="stat-row">
-                <span className="stat-label">Bust:</span>
-                <span className="stat-value">{player.bust}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Additional Info */}
-          <div className="additional-info">
-            {player.isRookie && (
-              <div className="rookie-badge">
-                🏈 Rookie - {player.college} (R{player.draftRound || '?'})
-              </div>
-            )}
-            
-            {player.injury && (
-              <div className="injury-badge">
-                ⚠️ {player.injury} - {player.injuryStatus}
-              </div>
-            )}
-          </div>
-
-          {/* Value Analysis */}
-          <div className="value-analysis">
-            <h5>Value Analysis</h5>
-            <div className="value-breakdown">
-              <div className="value-item">
-                <span>Rank vs ADP:</span>
-                <span className={player.rank < (player.adp || 999) ? 'positive' : 'negative'}>
-                  {player.rank < (player.adp || 999) ? 'Value Pick' : 'Reach'}
-                </span>
-              </div>
-              <div className="value-item">
-                <span>Position Rank:</span>
-                <span>{player.position} #{player.rank || 'N/A'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-};
-
-export default PlayerCard; 
+  };
+  
+  export default PlayerCard; 

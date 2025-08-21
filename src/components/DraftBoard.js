@@ -1,7 +1,7 @@
 import React from 'react';
 import './DraftBoard.css';
 
-const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
+const DraftBoard = ({ draftState, setDraftState, currentLeague, onPlayerClick }) => {
   const handleAddTeam = () => {
     const teamName = prompt('Enter team name:');
     if (teamName) {
@@ -146,7 +146,11 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague }) => {
                         {player ? (
                           <div 
                             className="player-cell"
-                            style={{ borderLeftColor: getPositionColor(player.position) }}
+                            onClick={() => onPlayerClick && onPlayerClick(player)}
+                            style={{ 
+                              borderLeftColor: getPositionColor(player.position),
+                              cursor: onPlayerClick ? 'pointer' : 'default'
+                            }}
                           >
                             <div className="player-name" style={{ color: getPositionColor(player.position) }}>
                               {formatPlayerName(player.name)}
