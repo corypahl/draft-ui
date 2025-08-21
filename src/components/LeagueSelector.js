@@ -3,9 +3,25 @@ import './LeagueSelector.css';
 import { fetchAndProcessDraftData, DATA_SOURCES } from '../services/draftDataService';
 
 const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
+  // League-specific default configurations
+  const leagueDefaults = {
+    'FanDuel': {
+      dataSource: DATA_SOURCES.SLEEPER,
+      draftId: '1257088161859772417' // FanDuel league draft ID
+    },
+    'Jackson': {
+      dataSource: DATA_SOURCES.SLEEPER,
+      draftId: '1257138560100741120' // Jackson league draft ID
+    },
+    'GVSU': {
+      dataSource: DATA_SOURCES.GOOGLE_APPS_SCRIPT,
+      draftId: '' // No draft ID needed for Google Apps Script
+    }
+  };
+
   const [selectedLeague, setSelectedLeague] = useState('FanDuel');
-  const [dataSource, setDataSource] = useState(DATA_SOURCES.SLEEPER);
-  const [draftId, setDraftId] = useState('1256013847173550080'); // Default to example draft ID
+  const [dataSource, setDataSource] = useState(leagueDefaults['FanDuel'].dataSource);
+  const [draftId, setDraftId] = useState(leagueDefaults['FanDuel'].draftId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -51,8 +67,25 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
   }, [autoRefresh, refreshInterval, draftId, dataSource]);
 
   const handleLeagueChange = (leagueId) => {
+    console.log('LeagueSelector: Switching to league:', leagueId);
     setSelectedLeague(leagueId);
     setError('');
+    
+    // Apply league-specific defaults
+    const defaults = leagueDefaults[leagueId];
+    if (defaults) {
+      console.log('LeagueSelector: Applying defaults:', defaults);
+      setDataSource(defaults.dataSource);
+      setDraftId(defaults.draftId);
+      
+      // Automatically fetch draft data when switching leagues
+      // Use the new values directly instead of relying on state updates
+      setTimeout(() => {
+        console.log('LeagueSelector: Fetching data with params:', defaults.dataSource, defaults.draftId);
+        fetchDraftDataWithParams(defaults.dataSource, defaults.draftId);
+      }, 100); // Small delay to ensure state updates are applied
+    }
+    
     onLeagueChange(leagueId);
   };
 
@@ -77,9 +110,9 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     }
   };
 
-  const fetchDraftData = async () => {
+  const fetchDraftDataWithParams = async (source, id) => {
     // Validate input based on data source
-    if (dataSource === DATA_SOURCES.SLEEPER && !draftId.trim()) {
+    if (source === DATA_SOURCES.SLEEPER && !id.trim()) {
       setError('Please enter a draft ID for Sleeper API');
       return;
     }
@@ -88,10 +121,10 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     setError('');
 
     try {
-      console.log('Fetching draft data from:', dataSource);
+      console.log('Fetching draft data from:', source, 'with ID:', id);
       
       // Use the new unified service
-      const processedData = await fetchAndProcessDraftData(dataSource, draftId);
+      const processedData = await fetchAndProcessDraftData(source, id);
       console.log('Processed data:', processedData);
       
       onDraftDataUpdate(processedData);
@@ -103,6 +136,10 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchDraftData = async () => {
+    return fetchDraftDataWithParams(dataSource, draftId);
   };
 
 

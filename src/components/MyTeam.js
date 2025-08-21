@@ -1,7 +1,8 @@
 import React from 'react';
 import './MyTeam.css';
+import TeamAnalysis from './TeamAnalysis';
 
-const MyTeam = ({ draftState, currentLeague }) => {
+const MyTeam = ({ draftState, currentLeague, playerData }) => {
   const { userTeam } = draftState;
 
   const getPositionColor = (position) => {
@@ -53,32 +54,42 @@ const MyTeam = ({ draftState, currentLeague }) => {
         </div>
       </div>
 
-      <div className="team-roster">
-        {sortedPlayers.length === 0 ? (
-          <div className="no-players-message">
-            <p>No players drafted yet.</p>
-          </div>
-        ) : (
-          <div className="players-list">
-            {sortedPlayers.map((player) => (
-              <div key={player.id} className="roster-player">
-                <div className="player-info">
-                  <span className="player-name" style={{ color: getPositionColor(player.position) }}>
-                    {player.name}
-                  </span>
-                  <span className="player-position" style={{ color: getPositionColor(player.position) }}>
-                    {player.position}
-                  </span>
-                  <span className="player-team">{player.team}</span>
-                </div>
-                <div className="draft-info">
-                  <span className="draft-round">R{player.draftRound}</span>
-                  <span className="pick-number">#{player.pickNumber}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Team Analysis Section */}
+      <div className="team-analysis-section">
+        <TeamAnalysis 
+          draftState={draftState} 
+          allPlayers={playerData?.allPlayers || []} 
+        />
+      </div>
+
+      {/* Team Roster Section */}
+      <div className="team-roster-section">
+        <h3 className="roster-section-title">Team Roster</h3>
+        <div className="team-roster">
+          {sortedPlayers.length === 0 ? (
+            <div className="no-players-message">
+              <p>No players drafted yet.</p>
+            </div>
+          ) : (
+            <div className="players-list">
+                             {sortedPlayers.map((player) => (
+                 <div key={player.id} className="roster-player">
+                   <div className="player-info">
+                     <span className="draft-info-inline">
+                       R{player.draftRound} #{player.pickNumber}
+                     </span>
+                     <span className="player-position" style={{ color: getPositionColor(player.position) }}>
+                       {player.position}
+                     </span>
+                     <span className="player-name" style={{ color: getPositionColor(player.position) }}>
+                       {player.name}
+                     </span>
+                   </div>
+                 </div>
+               ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

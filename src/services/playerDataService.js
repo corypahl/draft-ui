@@ -88,7 +88,9 @@ export const processPlayerData = (rawData, selectedLeague) => {
     const rookieInfo = rookieMap[player.Name];
 
     // Handle different possible field names and parse values
-    const rank = parseInt(player.P_Rank || player.Rank || player['P_Rank']) || index + 1;
+    const positionalRank = parseInt(player.P_Rank || player.Rank || player['P_Rank']) || index + 1;
+    // Try to find global rank, fallback to index + 1 (position in overall list) if not available
+    const globalRank = parseInt(player.G_Rank || player.Global_Rank || player['G_Rank'] || player.Overall_Rank || player['Overall_Rank']) || (index + 1);
     const projectedPoints = parseFloat(player.P_Pts || player.Proj || player['P_Pts']) || 0;
     const team = depthInfo?.team || player.Team || 'FA';
     const position = player.Pos || player.Position || 'UNK';
@@ -106,8 +108,9 @@ export const processPlayerData = (rawData, selectedLeague) => {
       name: player.Name,
       position: position,
       team: team,
-      rank: rank,
-      tier: getTierFromRank(rank),
+      rank: globalRank, // Use global rank as primary rank
+      positionalRank: positionalRank, // Keep positional rank for reference
+      tier: getTierFromRank(globalRank), // Use global rank for tier calculation
       projectedPoints: projectedPoints,
       
       // Enhanced data from other tables
@@ -134,6 +137,7 @@ export const processPlayerData = (rawData, selectedLeague) => {
     return playerObject;
   });
 
+  // Sort by global rank to ensure proper ordering
   const sortedPlayers = players.sort((a, b) => a.rank - b.rank);
   
   return sortedPlayers;

@@ -31,6 +31,12 @@ const Shortlist = ({ draftState, currentLeague, playerData }) => {
 
   // Calculate position rank for a player
   const getPositionRank = (player, allPlayers) => {
+    // Use the positionalRank field if available, otherwise calculate it
+    if (player.positionalRank) {
+      return player.positionalRank;
+    }
+    
+    // Fallback calculation based on global rank within position
     const samePositionPlayers = allPlayers.filter(p => p.position === player.position);
     const sortedByRank = samePositionPlayers.sort((a, b) => a.rank - b.rank);
     const positionRank = sortedByRank.findIndex(p => p.id === player.id) + 1;

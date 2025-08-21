@@ -4,9 +4,11 @@ import LeagueSelector from './components/LeagueSelector';
 import PlayerList from './components/PlayerList';
 import DraftBoard from './components/DraftBoard';
 import DepthCharts from './components/DepthCharts';
-import DraftInfo from './components/DraftInfo';
+
 import MyTeam from './components/MyTeam';
 import Shortlist from './components/Shortlist';
+import TeamAnalysis from './components/TeamAnalysis';
+import AdvancedRecommendations from './components/AdvancedRecommendations';
 import { fetchPlayerData, processPlayerData } from './services/playerDataService';
 
 function App() {
@@ -20,7 +22,7 @@ function App() {
     totalRounds: 0,
     leagueName: ''
   });
-  const [activeTab, setActiveTab] = useState('draft-info'); // 'draft-info', 'draft-board', 'players', 'my-team'
+  const [activeTab, setActiveTab] = useState('players'); // 'players', 'draft-board', 'my-team', 'advanced-recommendations'
   
   // Global player data state for performance optimization
   const [playerData, setPlayerData] = useState({
@@ -63,6 +65,7 @@ function App() {
   }, [currentLeague]);
 
   const handleLeagueChange = (leagueId) => {
+    console.log('Switching to league:', leagueId);
     setCurrentLeague(leagueId);
     // Reset draft state when switching leagues
     setDraftState({
@@ -72,7 +75,9 @@ function App() {
       availablePlayers: [],
       draftStatus: 'pre_draft',
       totalRounds: 0,
-      leagueName: ''
+      leagueName: '',
+      dataSource: '',
+      season: ''
     });
   };
 
@@ -82,11 +87,13 @@ function App() {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'draft-info':
+      case 'players':
         return (
-          <DraftInfo
+          <PlayerList
+            availablePlayers={draftState.availablePlayers}
             draftState={draftState}
             currentLeague={currentLeague}
+            playerData={playerData}
           />
         );
       case 'draft-board':
@@ -97,20 +104,12 @@ function App() {
             currentLeague={currentLeague}
           />
         );
-      case 'players':
-        return (
-          <PlayerList
-            availablePlayers={draftState.availablePlayers}
-            draftState={draftState}
-            currentLeague={currentLeague}
-            playerData={playerData}
-          />
-        );
       case 'my-team':
         return (
           <MyTeam
             draftState={draftState}
             currentLeague={currentLeague}
+            playerData={playerData}
           />
         );
       case 'depth-charts':
@@ -121,11 +120,20 @@ function App() {
             playerData={playerData}
           />
         );
+      case 'advanced-recommendations':
+        return (
+          <AdvancedRecommendations
+            draftState={draftState}
+            allPlayers={playerData.allPlayers}
+          />
+        );
       default:
         return (
-          <DraftInfo
+          <PlayerList
+            availablePlayers={draftState.availablePlayers}
             draftState={draftState}
             currentLeague={currentLeague}
+            playerData={playerData}
           />
         );
     }
@@ -147,10 +155,10 @@ function App() {
         {/* Navigation Tabs */}
         <div className="tab-navigation">
           <button 
-            className={`tab-button ${activeTab === 'draft-info' ? 'active' : ''}`}
-            onClick={() => setActiveTab('draft-info')}
+            className={`tab-button ${activeTab === 'players' ? 'active' : ''}`}
+            onClick={() => setActiveTab('players')}
           >
-            ℹ️ Draft Info
+            📋 Players
           </button>
           <button 
             className={`tab-button ${activeTab === 'draft-board' ? 'active' : ''}`}
@@ -159,16 +167,16 @@ function App() {
             🏆 Draft Board
           </button>
           <button 
-            className={`tab-button ${activeTab === 'players' ? 'active' : ''}`}
-            onClick={() => setActiveTab('players')}
-          >
-            📋 Players
-          </button>
-          <button 
             className={`tab-button ${activeTab === 'my-team' ? 'active' : ''}`}
             onClick={() => setActiveTab('my-team')}
           >
             👤 My Team
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'advanced-recommendations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('advanced-recommendations')}
+          >
+            🎯 Advanced Recs
           </button>
           <button 
             className={`tab-button ${activeTab === 'depth-charts' ? 'active' : ''}`}
