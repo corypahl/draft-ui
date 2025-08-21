@@ -12,7 +12,7 @@ import AdvancedRecommendations from './components/AdvancedRecommendations';
 import { fetchPlayerData, processPlayerData } from './services/playerDataService';
 
 function App() {
-  const [currentLeague, setCurrentLeague] = useState('FanDuel');
+  const [currentLeague, setCurrentLeague] = useState('Jackson');
   const [draftState, setDraftState] = useState({
     currentPick: 1,
     teams: [],

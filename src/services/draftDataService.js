@@ -83,7 +83,21 @@ export const fetchSleeperDraftData = async (draftId) => {
       }
     }
 
-    return { draftData, picksData, leagueData, rostersData };
+    // Fetch users to get display names
+    let usersData = null;
+    if (draftData.league_id) {
+      try {
+        const usersResponse = await fetch(`${SLEEPER_API_BASE}/league/${draftData.league_id}/users`);
+        if (usersResponse.ok) {
+          usersData = await usersResponse.json();
+          console.log('Fetched users data:', usersData);
+        }
+      } catch (error) {
+        console.warn('Could not fetch users data for display names:', error);
+      }
+    }
+
+    return { draftData, picksData, leagueData, rostersData, usersData };
   } catch (error) {
     console.error('Error fetching Sleeper draft data:', error);
     throw error;
@@ -139,7 +153,7 @@ export const fetchGoogleAppsScriptDraftData = async () => {
 };
 
 // Process Sleeper draft data
-export const processSleeperDraftData = (draftData, picksData, leagueData = null, rostersData = null) => {
+export const processSleeperDraftData = (draftData, picksData, leagueData = null, rostersData = null, usersData = null) => {
   try {
     console.log('Processing Sleeper draft data');
     
@@ -162,16 +176,18 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
       rostersData.forEach(roster => {
         if (roster.owner_id && roster.roster_id) {
           rosterToUserId[roster.roster_id] = roster.owner_id;
+          console.log(`Mapped roster ID ${roster.roster_id} to user ID: ${roster.owner_id}`);
         }
       });
     }
     
     // Create a map of user IDs to display names
     const userIdToDisplayName = {};
-    if (leagueData && leagueData.users && Array.isArray(leagueData.users)) {
-      leagueData.users.forEach(user => {
+    if (usersData && Array.isArray(usersData)) {
+      usersData.forEach(user => {
         if (user.user_id && user.display_name) {
           userIdToDisplayName[user.user_id] = user.display_name;
+          console.log(`Mapped user ID ${user.user_id} to display name: ${user.display_name}`);
         }
       });
     }
@@ -184,6 +200,8 @@ export const processSleeperDraftData = (draftData, picksData, leagueData = null,
       let teamName = ownerId && userIdToDisplayName[ownerId] 
         ? userIdToDisplayName[ownerId] 
         : `Team ${rosterId}`;
+      
+      console.log(`Team ${i}: rosterId=${rosterId}, ownerId=${ownerId}, teamName=${teamName}`);
       
       // If this is the user's draft slot, replace the team name with their display name
       if (userDraftSlot && i === userDraftSlot) {
@@ -555,7 +573,8 @@ export const fetchAndProcessDraftData = async (dataSource, draftId = null) => {
           sleeperData.draftData, 
           sleeperData.picksData, 
           sleeperData.leagueData, 
-          sleeperData.rostersData
+          sleeperData.rostersData,
+          sleeperData.usersData
         );
         break;
         

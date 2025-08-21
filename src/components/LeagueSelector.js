@@ -19,9 +19,9 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     }
   };
 
-  const [selectedLeague, setSelectedLeague] = useState('FanDuel');
-  const [dataSource, setDataSource] = useState(leagueDefaults['FanDuel'].dataSource);
-  const [draftId, setDraftId] = useState(leagueDefaults['FanDuel'].draftId);
+  const [selectedLeague, setSelectedLeague] = useState('Jackson');
+  const [dataSource, setDataSource] = useState(leagueDefaults['Jackson'].dataSource);
+  const [draftId, setDraftId] = useState(leagueDefaults['Jackson'].draftId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -34,6 +34,16 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     { id: 'Jackson', name: 'Jackson' },
     { id: 'GVSU', name: 'GVSU' }
   ];
+
+  // Fetch draft data on initial load
+  useEffect(() => {
+    // Automatically fetch draft data when component mounts with Jackson league defaults
+    const defaults = leagueDefaults['Jackson'];
+    if (defaults) {
+      console.log('LeagueSelector: Initial load - fetching data with params:', defaults.dataSource, defaults.draftId);
+      fetchDraftDataWithParams(defaults.dataSource, defaults.draftId);
+    }
+  }, []); // Empty dependency array means this runs once on mount
 
   // Handle auto-refresh functionality
   useEffect(() => {
