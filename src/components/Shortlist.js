@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import './Shortlist.css';
 
-const Shortlist = ({ draftState, currentLeague, playerData }) => {
+const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => {
   // Filter out drafted players and sort by global rank
   const shortlistPlayers = useMemo(() => {
     if (!playerData.allPlayers || playerData.allPlayers.length === 0) {
@@ -95,13 +95,20 @@ const Shortlist = ({ draftState, currentLeague, playerData }) => {
           shortlistPlayers.map((player) => {
             const positionRank = getPositionRank(player, playerData.allPlayers);
             return (
-              <div key={player.id} className="shortlist-item">
-                <span 
-                  className="player-info-compact"
-                  style={{ color: getPositionColor(player.position) }}
-                >
-                  #{player.rank} {player.name} ({player.position}{positionRank})
-                </span>
+              <div 
+                key={player.id} 
+                className="shortlist-item"
+                onClick={() => onPlayerClick && onPlayerClick(player)}
+                style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
+              >
+                                                   <span 
+                    className="player-info-compact"
+                    style={{ color: getPositionColor(player.position) }}
+                  >
+                    #{player.rank} {player.name} ({player.position}{positionRank})
+                    {player.injury && <span style={{ color: '#e53e3e', marginLeft: '4px' }}>*</span>}
+                    {player.isRookie && <span style={{ color: '#805ad5', marginLeft: '4px', fontWeight: 'bold' }}>R</span>}
+                  </span>
               </div>
             );
           })

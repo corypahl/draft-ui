@@ -14,6 +14,7 @@ const PlayerCardContainer = ({ selectedPlayers, onRemovePlayer }) => {
           <PlayerCard
             key={player.id}
             player={player}
+            selectedPlayers={selectedPlayers}
             onRemove={onRemovePlayer}
           />
         ))}

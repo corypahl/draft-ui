@@ -45,6 +45,16 @@ const DepthCharts = ({ draftState, currentLeague, playerData, onPlayerClick }) =
     return player ? { rank: player.rank, tier: player.tier } : { rank: '', tier: 0 };
   };
 
+  const getFullPlayerData = (playerName, position) => {
+    if (!playerData.allPlayers || playerData.allPlayers.length === 0) {
+      return null;
+    }
+    
+    return playerData.allPlayers.find(p => 
+      p.name === playerName && p.position === position
+    );
+  };
+
   const isPlayerDrafted = (playerName) => {
     return draftState.draftedPlayers.some(player => 
       player.name === playerName || 
@@ -134,15 +144,16 @@ const DepthCharts = ({ draftState, currentLeague, playerData, onPlayerClick }) =
                       {processedTeam.positions.QB.map((player, playerIndex) => {
                         const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
+                        const fullPlayerData = getFullPlayerData(player.name, player.position);
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
-                            onClick={() => onPlayerClick && onPlayerClick(player)}
+                            onClick={() => onPlayerClick && fullPlayerData && onPlayerClick(fullPlayerData)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
                               textDecoration: isDrafted ? 'line-through' : 'none',
-                              cursor: onPlayerClick ? 'pointer' : 'default'
+                              cursor: onPlayerClick && fullPlayerData ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}
@@ -154,15 +165,16 @@ const DepthCharts = ({ draftState, currentLeague, playerData, onPlayerClick }) =
                       {processedTeam.positions.RB.map((player, playerIndex) => {
                         const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
+                        const fullPlayerData = getFullPlayerData(player.name, player.position);
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
-                            onClick={() => onPlayerClick && onPlayerClick(player)}
+                            onClick={() => onPlayerClick && fullPlayerData && onPlayerClick(fullPlayerData)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
                               textDecoration: isDrafted ? 'line-through' : 'none',
-                              cursor: onPlayerClick ? 'pointer' : 'default'
+                              cursor: onPlayerClick && fullPlayerData ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}
@@ -174,15 +186,16 @@ const DepthCharts = ({ draftState, currentLeague, playerData, onPlayerClick }) =
                       {processedTeam.positions.WR.map((player, playerIndex) => {
                         const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
+                        const fullPlayerData = getFullPlayerData(player.name, player.position);
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
-                            onClick={() => onPlayerClick && onPlayerClick(player)}
+                            onClick={() => onPlayerClick && fullPlayerData && onPlayerClick(fullPlayerData)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
                               textDecoration: isDrafted ? 'line-through' : 'none',
-                              cursor: onPlayerClick ? 'pointer' : 'default'
+                              cursor: onPlayerClick && fullPlayerData ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}
@@ -194,15 +207,16 @@ const DepthCharts = ({ draftState, currentLeague, playerData, onPlayerClick }) =
                       {processedTeam.positions.TE.map((player, playerIndex) => {
                         const playerInfo = getPlayerRank(player.name, player.position);
                         const isDrafted = isPlayerDrafted(player.name);
+                        const fullPlayerData = getFullPlayerData(player.name, player.position);
                         return (
                           <div 
                             key={playerIndex} 
                             className={`depth-player ${isDrafted ? 'drafted' : ''}`}
-                            onClick={() => onPlayerClick && onPlayerClick(player)}
+                            onClick={() => onPlayerClick && fullPlayerData && onPlayerClick(fullPlayerData)}
                             style={{ 
                               color: isDrafted ? '#718096' : getTierColor(playerInfo.tier),
                               textDecoration: isDrafted ? 'line-through' : 'none',
-                              cursor: onPlayerClick ? 'pointer' : 'default'
+                              cursor: onPlayerClick && fullPlayerData ? 'pointer' : 'default'
                             }}
                           >
                             #{playerInfo.rank} {player.name}

@@ -227,6 +227,7 @@ function App() {
             draftState={draftState}
             currentLeague={currentLeague}
             playerData={playerData}
+            onPlayerClick={handleAddPlayer}
           />
         </div>
       </main>
