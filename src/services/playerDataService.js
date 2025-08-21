@@ -88,10 +88,10 @@ export const processPlayerData = (rawData, selectedLeague) => {
     const rookieInfo = rookieMap[player.Name];
 
     // Handle different possible field names and parse values
-    const positionalRank = parseInt(player.P_Rank || player.Rank || player['P_Rank']) || index + 1;
+    const positionalRank = parseInt(player['Pos Rank'] || player.Pos_Rank || player['Pos_Rank'] || player.P_Rank || player.Rank || player['P_Rank']) || index + 1;
     // Try to find global rank, fallback to index + 1 (position in overall list) if not available
     const globalRank = parseInt(player.G_Rank || player.Global_Rank || player['G_Rank'] || player.Overall_Rank || player['Overall_Rank']) || (index + 1);
-    const projectedPoints = parseFloat(player.P_Pts || player.Proj || player['P_Pts']) || 0;
+    const projectedPoints = parseFloat(player.Proj || player['Proj'] || player.P_Pts || player['P_Pts']) || 0;
     const team = depthInfo?.team || player.Team || 'FA';
     const position = player.Pos || player.Position || 'UNK';
     const bye = parseInt(player.Bye) || 0;

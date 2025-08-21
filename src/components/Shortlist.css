@@ -31,6 +31,16 @@
   background: var(--bg-tertiary);
   padding: 2px 6px;
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.picks-until-turn {
+  font-size: 0.75rem;
+  color: #3182ce;
+  font-weight: 500;
 }
 
 .shortlist-container {
@@ -61,6 +71,22 @@
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Injury indicator styling */
+.player-info-compact span[style*="color: #e53e3e"] {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* Projected pick indicator styling */
+.player-info-compact span[style*="color: white"] {
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
 .loading-message {
@@ -101,7 +127,15 @@
     border-top: 1px solid var(--border-color);
   }
   
-  .shortlist-container {
-    max-height: 300px;
+  .shortlist-header {
+    padding: 0.75rem;
+  }
+  
+  .shortlist-count {
+    font-size: 0.75rem;
+  }
+  
+  .picks-until-turn {
+    font-size: 0.7rem;
   }
 } 

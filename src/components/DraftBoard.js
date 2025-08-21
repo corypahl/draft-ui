@@ -17,15 +17,50 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague, onPlayerClick })
     }
   };
 
+  // Calculate which team should pick at a given pick number (snake draft logic)
+  const getTeamForPick = (pickNumber, totalTeams) => {
+    if (totalTeams === 0) return null;
+    
+    const round = Math.ceil(pickNumber / totalTeams);
+    const positionInRound = ((pickNumber - 1) % totalTeams) + 1;
+    
+    // Odd rounds go forward (1, 2, 3, 4, 5, 6), even rounds go backward (6, 5, 4, 3, 2, 1)
+    if (round % 2 === 1) {
+      // Odd round - forward order
+      return positionInRound;
+    } else {
+      // Even round - reverse order
+      return totalTeams - positionInRound + 1;
+    }
+  };
+
+  // Calculate the pick number for a specific team and round
+  const getPickNumberForTeamAndRound = (teamIndex, round, totalTeams) => {
+    if (totalTeams === 0) return 0;
+    
+    // Calculate the position in the round (1-based)
+    let positionInRound;
+    if (round % 2 === 1) {
+      // Odd round - forward order (1, 2, 3, 4, 5, 6)
+      positionInRound = teamIndex + 1;
+    } else {
+      // Even round - reverse order (6, 5, 4, 3, 2, 1)
+      positionInRound = totalTeams - teamIndex;
+    }
+    
+    // Calculate the pick number
+    return ((round - 1) * totalTeams) + positionInRound;
+  };
+
   const getCurrentTeamName = () => {
     if (draftState.teams.length === 0) return 'No teams';
-    const teamIndex = (draftState.currentPick - 1) % draftState.teams.length;
+    const teamIndex = getTeamForPick(draftState.currentPick, draftState.teams.length) - 1;
     return draftState.teams[teamIndex]?.name || 'No teams';
   };
 
   const getCurrentTeam = () => {
     if (draftState.teams.length === 0) return null;
-    const teamIndex = (draftState.currentPick - 1) % draftState.teams.length;
+    const teamIndex = getTeamForPick(draftState.currentPick, draftState.teams.length) - 1;
     return draftState.teams[teamIndex];
   };
 
@@ -137,6 +172,7 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague, onPlayerClick })
                     const player = getPlayerForTeamAndRound(team.id, round);
                     const isCurrent = isCurrentPick(team.id, round);
                     const isOnClock = getCurrentTeam()?.id === team.id;
+                    const pickNumber = getPickNumberForTeamAndRound(teamIndex, round, draftState.teams.length);
                     
                     return (
                       <div 
@@ -162,7 +198,7 @@ const DraftBoard = ({ draftState, setDraftState, currentLeague, onPlayerClick })
                           </div>
                         ) : (
                           <div className="empty-cell">
-                            <div className="pick-number">#{((round - 1) * draftState.teams.length) + teamIndex + 1}</div>
+                            <div className="pick-number">#{pickNumber}</div>
                           </div>
                         )}
                       </div>
