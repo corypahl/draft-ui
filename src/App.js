@@ -6,10 +6,9 @@ import DraftBoard from './components/DraftBoard';
 import DepthCharts from './components/DepthCharts';
 import PlayerCardContainer from './components/PlayerCardContainer';
 
-import MyTeam from './components/MyTeam';
 import Shortlist from './components/Shortlist';
 import TeamAnalysis from './components/TeamAnalysis';
-import AdvancedRecommendations from './components/AdvancedRecommendations';
+import Recommendations from './components/Recommendations';
 import { fetchPlayerData, processPlayerData } from './services/playerDataService';
 
 function App() {
@@ -23,7 +22,7 @@ function App() {
     totalRounds: 0,
     leagueName: ''
   });
-  const [activeTab, setActiveTab] = useState('players'); // 'players', 'draft-board', 'my-team', 'advanced-recommendations'
+  const [activeTab, setActiveTab] = useState('players'); // 'players', 'draft-board', 'recommendations'
   
   // Selected players for player cards (max 3)
   const [selectedPlayers, setSelectedPlayers] = useState([]);
@@ -128,15 +127,7 @@ function App() {
             onPlayerClick={handleAddPlayer}
           />
         );
-      case 'my-team':
-        return (
-          <MyTeam
-            draftState={draftState}
-            currentLeague={currentLeague}
-            playerData={playerData}
-            onPlayerClick={handleAddPlayer}
-          />
-        );
+
       case 'depth-charts':
         return (
           <DepthCharts
@@ -146,9 +137,9 @@ function App() {
             onPlayerClick={handleAddPlayer}
           />
         );
-      case 'advanced-recommendations':
+      case 'recommendations':
         return (
-          <AdvancedRecommendations
+          <Recommendations
             draftState={draftState}
             allPlayers={playerData.allPlayers}
             onPlayerClick={handleAddPlayer}
@@ -195,16 +186,10 @@ function App() {
             🏆 Draft Board
           </button>
           <button 
-            className={`tab-button ${activeTab === 'my-team' ? 'active' : ''}`}
-            onClick={() => setActiveTab('my-team')}
+            className={`tab-button ${activeTab === 'recommendations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('recommendations')}
           >
-            👤 My Team
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'advanced-recommendations' ? 'active' : ''}`}
-            onClick={() => setActiveTab('advanced-recommendations')}
-          >
-            🎯 Advanced Recs
+            🎯 Recommendations
           </button>
           <button 
             className={`tab-button ${activeTab === 'depth-charts' ? 'active' : ''}`}
