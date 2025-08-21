@@ -154,21 +154,19 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague, playerData })
                       <span className="position-count">({players.length})</span>
                     </div>
                     <div className="position-players">
-                      {players.map((player, index) => {
-                        return (
-                          <div 
-                            key={player.id} 
-                            className="player-item"
-                          >
-                            <div className="player-rank" style={{ color: getTierColor(player.tier) }}>
-                              #{player.rank}
-                            </div>
-                            <div className="player-name" style={{ color: getTierColor(player.tier) }}>
-                              {player.name}
-                            </div>
+                      {players.map((player, index) => (
+                        <div
+                          key={player.id}
+                          className="player-item"
+                        >
+                          <div className="player-rank" style={{ color: getTierColor(player.tier) }}>
+                            #{player.rank}
                           </div>
-                        );
-                      })}
+                          <div className="player-name" style={{ color: getTierColor(player.tier) }}>
+                            {player.name}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}

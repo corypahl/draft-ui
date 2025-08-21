@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-card);
+  overflow-y: auto;
 }
 
 .my-team-header {
@@ -14,6 +15,7 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .my-team-header h2 {
@@ -72,9 +74,39 @@
   color: var(--accent-blue);
 }
 
+/* Team Analysis Section */
+.team-analysis-section {
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.team-analysis-section .team-analysis {
+  margin-bottom: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Team Roster Section */
+.team-roster-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.roster-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
 .team-roster {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .no-players-message {
@@ -94,7 +126,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem;
   background: var(--bg-secondary);
   border-radius: 6px;
   border: 1px solid var(--border-color);
@@ -110,22 +142,24 @@
   align-items: center;
   gap: 0.75rem;
   flex: 1;
+  flex-wrap: wrap;
 }
 
 .player-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   line-height: 1.2;
+  min-width: 120px;
 }
 
 .player-position {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   background: var(--bg-tertiary);
-  padding: 0.2rem 0.4rem;
+  padding: 0.15rem 0.4rem;
   border-radius: 3px;
-  min-width: 2rem;
+  min-width: 1.8rem;
   text-align: center;
 }
 
@@ -133,28 +167,17 @@
   font-size: 0.8rem;
   color: var(--text-secondary);
   font-weight: 400;
+  min-width: 60px;
 }
 
-.draft-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-}
-
-.draft-round {
+.draft-info-inline {
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
   background: var(--bg-tertiary);
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 3px;
-}
-
-.pick-number {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  font-weight: 400;
+  white-space: nowrap;
 }
 
 /* Responsive Design */
@@ -171,7 +194,7 @@
   }
   
   .roster-player {
-    padding: 0.6rem;
+    padding: 0.4rem 0.6rem;
   }
   
   .player-info {
@@ -179,16 +202,22 @@
   }
   
   .player-name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    min-width: 100px;
   }
   
   .player-position {
-    font-size: 0.75rem;
-    min-width: 1.8rem;
+    font-size: 0.7rem;
+    min-width: 1.6rem;
   }
   
   .player-team {
     font-size: 0.75rem;
+    min-width: 50px;
+  }
+  
+  .draft-info-inline {
+    font-size: 0.7rem;
   }
 }
 
@@ -199,8 +228,11 @@
     gap: 0.25rem;
   }
   
-  .draft-info {
-    flex-direction: row;
-    gap: 0.5rem;
+  .player-name {
+    min-width: auto;
+  }
+  
+  .player-team {
+    min-width: auto;
   }
 } 
