@@ -353,13 +353,13 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
     const roundDiff = currentRound - adpRound;
     
     if (roundDiff >= 2) {
-      return { score: 20, reason: `Great value: ADP ${adp} (${roundDiff} rounds later)` };
+      return { score: 10, reason: `Great value: ADP ${adp} (${roundDiff} rounds later)` };
     } else if (roundDiff >= 1) {
-      return { score: 15, reason: `Good value: ADP ${adp} (1 round later)` };
+      return { score: 7, reason: `Good value: ADP ${adp} (1 round later)` };
     } else if (roundDiff === 0) {
-      return { score: 10, reason: `Fair value: ADP ${adp} (at ADP)` };
+      return { score: 5, reason: `Fair value: ADP ${adp} (at ADP)` };
     } else if (roundDiff >= -1) {
-      return { score: 5, reason: `Slight reach: ADP ${adp} (1 round early)` };
+      return { score: 2, reason: `Slight reach: ADP ${adp} (1 round early)` };
     } else {
       return { score: 0, reason: `Reach: ADP ${adp} (${Math.abs(roundDiff)} rounds early)` };
     }

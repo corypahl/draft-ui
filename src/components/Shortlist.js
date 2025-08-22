@@ -100,7 +100,7 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
     const rankScore = Math.max(0, (200 - player.rank) * 0.125);
     totalScore += rankScore;
     
-    // 3. ADP Value Score (0-20 points)
+    // 3. ADP Value Score (0-10 points) - Reduced weight
     if (player.adp) {
       const adpMatch = player.adp.toString().match(/^(\d+)\./);
       if (adpMatch) {
@@ -108,13 +108,13 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
         const roundDiff = currentRound - adpRound;
         
         if (roundDiff >= 2) {
-          totalScore += 20;
-        } else if (roundDiff >= 1) {
-          totalScore += 15;
-        } else if (roundDiff === 0) {
           totalScore += 10;
-        } else if (roundDiff >= -1) {
+        } else if (roundDiff >= 1) {
+          totalScore += 7;
+        } else if (roundDiff === 0) {
           totalScore += 5;
+        } else if (roundDiff >= -1) {
+          totalScore += 2;
         }
       }
     }
