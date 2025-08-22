@@ -91,9 +91,23 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
     let totalScore = 0;
     const reasons = [];
     
-    // 1. Position Need Score (0-30 points)
+    // 1. Position Need Score (0-30 points, or negative for overstocked positions)
     const positionNeed = positionNeeds[player.position] || 0;
-    const positionScore = positionNeed * 30;
+    let positionScore = 0;
+    
+    if (positionNeed > 0) {
+      // Positive score for needed positions
+      positionScore = positionNeed * 30;
+    } else {
+      // Negative score for overstocked positions
+      const myPositionCount = myPlayers.filter(p => p.position === player.position).length;
+      if (myPositionCount >= 6) {
+        positionScore = -20; // Heavy penalty for 6+ players
+      } else if (myPositionCount >= 5) {
+        positionScore = -10; // Moderate penalty for 5 players
+      }
+    }
+    
     totalScore += positionScore;
     
     // 2. Rank Score (0-25 points)
@@ -119,7 +133,7 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
       }
     }
     
-    return Math.round(totalScore);
+    return Math.max(0, Math.round(totalScore));
   };
 
   // Filter out drafted players and sort by global rank

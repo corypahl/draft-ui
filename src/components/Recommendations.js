@@ -288,13 +288,27 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
     const reasons = [];
     let totalScore = 0;
     
-    // 1. Position Need Score (0-30 points)
+    // 1. Position Need Score (0-30 points, or negative for overstocked positions)
     const positionNeed = positionNeeds[player.position] || 0;
-    const positionScore = positionNeed * 30;
-    totalScore += positionScore;
+    let positionScore = 0;
+    
     if (positionNeed > 0) {
+      // Positive score for needed positions
+      positionScore = positionNeed * 30;
       reasons.push(`Position need: ${player.position} (${positionNeed} needed)`);
+    } else {
+      // Negative score for overstocked positions
+      const myPositionCount = myPlayers.filter(p => p.position === player.position).length;
+      if (myPositionCount >= 6) {
+        positionScore = -20; // Heavy penalty for 6+ players
+        reasons.push(`Overstocked: ${player.position} (${myPositionCount} players)`);
+      } else if (myPositionCount >= 5) {
+        positionScore = -10; // Moderate penalty for 5 players
+        reasons.push(`Well stocked: ${player.position} (${myPositionCount} players)`);
+      }
     }
+    
+    totalScore += positionScore;
     
     // 2. Rank Score (0-25 points)
     const rankScore = Math.max(0, (200 - player.rank) * 0.125);
@@ -329,18 +343,18 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
       reasons.push(balanceScore.reason);
     }
     
-         return {
-       total: totalScore,
-       breakdown: {
-         position: positionScore,
-         rank: rankScore,
-         adp: adpValue.score,
-         stack: stackScore.score,
-         bye: byeScore.score,
-         balance: balanceScore.score
-       },
-       reasons
-     };
+                   return {
+        total: Math.max(0, totalScore),
+        breakdown: {
+          position: positionScore,
+          rank: rankScore,
+          adp: adpValue.score,
+          stack: stackScore.score,
+          bye: byeScore.score,
+          balance: balanceScore.score
+        },
+        reasons
+      };
   }
 
   function calculateADPValue(adp, currentRound) {
