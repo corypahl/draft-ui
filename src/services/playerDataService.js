@@ -95,11 +95,18 @@ export const processPlayerData = (rawData, selectedLeague) => {
     const team = depthInfo?.team || player.Team || 'FA';
     const position = player.Pos || player.Position || 'UNK';
     const bye = parseInt(player.Bye) || 0;
-    const adp = player.ADP || '';
+    let adp = player.ADP || '';
     const risk = player.Risk || '';
     const upside = player.Upside || '';
     const boom = player.Boom || '';
     const bust = player.Bust || '';
+
+    // Add defaults for Kickers and Defenses
+    if (position === 'K' && !adp) {
+      adp = '15.01'; // Last round of the draft
+    } else if (position === 'D' && !adp) {
+      adp = '14.01'; // 2nd to last round of the draft
+    }
 
     // Create the base player object with all original data
     const playerObject = {
@@ -110,7 +117,7 @@ export const processPlayerData = (rawData, selectedLeague) => {
       team: team,
       rank: globalRank, // Use global rank as primary rank
       positionalRank: positionalRank, // Keep positional rank for reference
-      tier: getTierFromRank(globalRank), // Use global rank for tier calculation
+      tier: position === 'K' || position === 'D' ? getTierFromPositionalRank(positionalRank) : getTierFromRank(globalRank), // Use positional rank for K/D tiers
       projectedPoints: projectedPoints,
       
       // Enhanced data from other tables
@@ -165,4 +172,19 @@ const getTierFromRank = (rank) => {
   if (rank <= 108) return 9;
   if (rank <= 120) return 10;
   return 11;
+};
+
+const getTierFromPositionalRank = (positionalRank) => {
+  // For Kickers and Defenses: Tier 1 = ranks 1-2, Tier 2 = ranks 3-4, etc.
+  if (positionalRank <= 2) return 1;
+  if (positionalRank <= 4) return 2;
+  if (positionalRank <= 6) return 3;
+  if (positionalRank <= 8) return 4;
+  if (positionalRank <= 10) return 5;
+  if (positionalRank <= 12) return 6;
+  if (positionalRank <= 14) return 7;
+  if (positionalRank <= 16) return 8;
+  if (positionalRank <= 18) return 9;
+  if (positionalRank <= 20) return 10;
+  return 11; // Any rank beyond 20
 }; 

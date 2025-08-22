@@ -104,14 +104,10 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
     // Tier drop analysis (less sensitive)
     const tierDrops = analyzeTierDrops(availablePlayers, userNextPick);
 
-    // Stack opportunities (improved)
-    const stackOpportunities = findStackOpportunities(myPlayers, availablePlayers, userNextPick);
-
     return {
       userNextPick,
       positionalBreakdown,
       tierDrops,
-      stackOpportunities,
       positionNeeds
     };
   }, [draftState, allPlayers]);
@@ -182,34 +178,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
     return tierDrops;
   }
 
-  function findStackOpportunities(myPlayers, availablePlayers, nextPick) {
-    const myQBs = myPlayers.filter(p => p.position === 'QB');
-    const opportunities = [];
 
-    myQBs.forEach(qb => {
-      const qbData = allPlayers.find(p => p.name === qb.name);
-      if (!qbData?.team) return;
-
-      const stackTargets = availablePlayers
-        .filter(player => 
-          player.team === qbData.team && 
-          (player.position === 'WR' || player.position === 'TE')
-        )
-        .sort((a, b) => (a.adp || 999) - (b.adp || 999))
-        .slice(0, 3);
-
-      if (stackTargets.length > 0) {
-        opportunities.push({
-          qb: qb,
-          qbTeam: qbData.team,
-          targets: stackTargets,
-          projectedPoints: qbData.projectedPoints || 0
-        });
-      }
-    });
-
-    return opportunities;
-  }
 
   if (!recommendations) {
     return (
@@ -441,41 +410,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
           </div>
         </div>
 
-        {/* Stack Opportunities */}
-        {recommendations.stackOpportunities.length > 0 && (
-          <div className="recommendation-section">
-            <h4>🔗 Stack Opportunities</h4>
-            <div className="stack-opportunities">
-              {recommendations.stackOpportunities.map((stack, index) => (
-                <div key={index} className="stack-opportunity">
-                  <div className="stack-qb">
-                    <span className="qb-name">{stack.qb.name}</span>
-                    <span className="qb-team">{stack.qbTeam}</span>
-                  </div>
-                  <div className="stack-targets">
-                    {stack.targets.map((target, tIndex) => (
-                      <div 
-                        key={tIndex} 
-                        className="stack-target"
-                        onClick={() => onPlayerClick && onPlayerClick(target)}
-                        style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
-                      >
-                        <span 
-                          className="target-position"
-                          style={{ color: getPositionColor(target.position) }}
-                        >
-                          {target.position}
-                        </span>
-                        <span className="target-name">{target.name}</span>
-                        <span className="target-adp">ADP: {target.adp}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
   );

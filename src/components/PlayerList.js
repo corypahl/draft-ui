@@ -92,6 +92,35 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague, playerData, o
     return colors[position] || '#718096';
   };
 
+  const getADPColor = (adp) => {
+    if (!adp || !draftState.currentPick) return '#4a5568'; // Default grey
+    
+    // Parse ADP (e.g., "11.07" -> round 11)
+    const adpMatch = adp.toString().match(/^(\d+)\./);
+    if (!adpMatch) return '#4a5568';
+    
+    const adpRound = parseInt(adpMatch[1]);
+    const currentRound = Math.ceil(draftState.currentPick / draftState.teams.length);
+    const maxRounds = 15; // Assuming 15 rounds total
+    
+    // If ADP is less than or equal to current round (good value)
+    if (adpRound <= currentRound) {
+      return '#38a169'; // Green
+    }
+    // If ADP is in the next two rounds (moderate value)
+    else if (adpRound <= currentRound + 2) {
+      return '#d69e2e'; // Yellow
+    }
+    // If ADP is within the max rounds (poor value)
+    else if (adpRound <= maxRounds) {
+      return '#e53e3e'; // Red
+    }
+    // If ADP is beyond max rounds (very poor value)
+    else {
+      return '#4a5568'; // Grey
+    }
+  };
+
   if (playerData.isLoading) {
     return (
       <div className="player-list">
@@ -165,7 +194,11 @@ const PlayerList = ({ availablePlayers, draftState, currentLeague, playerData, o
                             #{player.rank}
                           </div>
                           <div className="player-name" style={{ color: getTierColor(player.tier) }}>
-                            {player.name}
+                            {player.name} {player.adp && (
+                              <span style={{ color: getADPColor(player.adp) }}>
+                                ({player.adp})
+                              </span>
+                            )}
                           </div>
                         </div>
                       ))}
