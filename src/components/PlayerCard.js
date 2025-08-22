@@ -180,14 +180,16 @@ const PlayerCard = ({ player, selectedPlayers, onRemove }) => {
           {renderStatRow('Risk', player.risk, getRiskColor(player.risk))}
         </div>
 
-        {/* History Section */}
-        <div className="stats-section">
-          <div className="section-title">History</div>
-          {renderStatRow('Prev Rank', player.P_Rank || player['P_Rank'], getPrevRankColor(player.P_Rank || player['P_Rank']))}
-          {renderStatRow('Prev Points', player.P_Pts || player['P_Pts'], getPrevPointsColor(player.P_Pts || player['P_Pts']))}
-          {renderStatRow('Boom', player.boom, getBoomBustColor(player.boom))}
-          {renderStatRow('Bust', player.bust, getBustColor(player.bust))}
-        </div>
+        {/* History Section - Hide for rookies */}
+        {!player.isRookie && (
+          <div className="stats-section">
+            <div className="section-title">History</div>
+            {renderStatRow('Prev Rank', player.P_Rank || player['P_Rank'], getPrevRankColor(player.P_Rank || player['P_Rank']))}
+            {renderStatRow('Prev Points', player.P_Pts || player['P_Pts'], getPrevPointsColor(player.P_Pts || player['P_Pts']))}
+            {renderStatRow('Boom', player.boom, getBoomBustColor(player.boom))}
+            {renderStatRow('Bust', player.bust, getBustColor(player.bust))}
+          </div>
+        )}
 
         {/* Injury Status Section */}
         {player.injury && (

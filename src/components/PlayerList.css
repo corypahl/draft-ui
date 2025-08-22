@@ -256,17 +256,12 @@
 }
 
 .player-name {
-  font-size: 0.9rem;
+  font-size: 0.80rem !important;
   font-weight: 500;
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.player-name {
-  font-size: 0.80rem;
-  font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
   display: flex;
@@ -450,11 +445,11 @@
   
   .player-rank {
     min-width: 35px;
-    font-size: 0.8rem;
+    font-size: 0.80rem !important;
   }
   
   .player-name {
-    font-size: 0.8rem;
+    font-size: 0.80rem !important;
   }
 }
 

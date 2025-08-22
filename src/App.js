@@ -180,12 +180,6 @@ function App() {
             📋 Players
           </button>
           <button 
-            className={`tab-button ${activeTab === 'draft-board' ? 'active' : ''}`}
-            onClick={() => setActiveTab('draft-board')}
-          >
-            🏆 Draft Board
-          </button>
-          <button 
             className={`tab-button ${activeTab === 'recommendations' ? 'active' : ''}`}
             onClick={() => setActiveTab('recommendations')}
           >
@@ -196,6 +190,12 @@ function App() {
             onClick={() => setActiveTab('depth-charts')}
           >
             📊 Depth Charts
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'draft-board' ? 'active' : ''}`}
+            onClick={() => setActiveTab('draft-board')}
+          >
+            🏆 Draft Board
           </button>
         </div>
 
