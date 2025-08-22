@@ -172,7 +172,7 @@ const PlayerCard = ({ player, selectedPlayers, onRemove }) => {
         <div className="stats-section">
           <div className="section-title">Outlook</div>
           {renderStatRow('Tier', player.tier, getRelativeColor(player.tier, 'tier', true))}
-          {renderStatRow('Overall Rank', player.rank, getRankColor(player.rank))}
+          {renderStatRow('Global Rank', player.rank, getRankColor(player.rank))}
           {renderStatRow('Position Rank', player.positionalRank, getRelativeColor(player.positionalRank, 'positionalRank', true))}
           {renderStatRow('Proj Points', player.projectedPoints, getPointsColor(player.projectedPoints))}
           {renderStatRow('ADP', player.adp, getADPColor(player.adp, player.rank))}
