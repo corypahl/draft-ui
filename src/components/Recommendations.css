@@ -27,8 +27,8 @@
 }
 
 .recommendations-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
@@ -93,7 +93,7 @@
 /* Positional Breakdown */
 .positional-breakdown {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
@@ -441,5 +441,148 @@
     content: "Upside: ";
     font-weight: 600;
     color: var(--text-secondary);
+  }
+} 
+
+/* Clean Top Recommendations Styles */
+.top-recommendations-section {
+  margin-bottom: 24px;
+}
+
+.top-recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.recommendation-card-clean {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.recommendation-card-clean:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent-blue);
+}
+
+.recommendation-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.recommendation-rank-clean {
+  background: var(--accent-blue);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 6px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.recommendation-player-info {
+  flex: 1;
+}
+
+.player-name-clean {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.player-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.player-position-clean {
+  font-weight: 600;
+}
+
+.player-team-clean {
+  font-weight: 500;
+}
+
+.player-adp-clean {
+  font-weight: 500;
+}
+
+.recommendation-score-clean {
+  text-align: center;
+  min-width: 60px;
+}
+
+.score-value-clean {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  line-height: 1;
+}
+
+.score-label-clean {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recommendation-reasons-clean {
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+.reasons-title-clean {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reasons-list-clean {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reason-item-clean {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Responsive adjustments for clean recommendations */
+@media (max-width: 768px) {
+  .top-recommendations-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .recommendation-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .recommendation-score-clean {
+    align-self: flex-end;
+  }
+  
+  .player-meta {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 } 

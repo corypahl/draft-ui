@@ -248,7 +248,7 @@
 
 
 .player-rank {
-  font-size: 0.9rem;
+  font-size: 0.80rem;
   font-weight: 600;
   min-width: 40px;
   text-align: center;
@@ -265,7 +265,7 @@
 }
 
 .player-name {
-  font-size: 1rem;
+  font-size: 0.80rem;
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 0.25rem;

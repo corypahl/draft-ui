@@ -189,7 +189,7 @@ function App() {
             className={`tab-button ${activeTab === 'recommendations' ? 'active' : ''}`}
             onClick={() => setActiveTab('recommendations')}
           >
-            🎯 Recommendations
+            🎯 Targets
           </button>
           <button 
             className={`tab-button ${activeTab === 'depth-charts' ? 'active' : ''}`}

@@ -86,6 +86,42 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
     return { playersToPick, picksUntilMyTurn };
   }, [draftState, playerData.allPlayers]);
 
+  // Calculate player scores using the same logic as Recommendations
+  const calculatePlayerScore = (player, myPlayers, positionNeeds, currentRound) => {
+    let totalScore = 0;
+    const reasons = [];
+    
+    // 1. Position Need Score (0-30 points)
+    const positionNeed = positionNeeds[player.position] || 0;
+    const positionScore = positionNeed * 30;
+    totalScore += positionScore;
+    
+    // 2. Rank Score (0-25 points)
+    const rankScore = Math.max(0, (200 - player.rank) * 0.125);
+    totalScore += rankScore;
+    
+    // 3. ADP Value Score (0-20 points)
+    if (player.adp) {
+      const adpMatch = player.adp.toString().match(/^(\d+)\./);
+      if (adpMatch) {
+        const adpRound = parseInt(adpMatch[1]);
+        const roundDiff = currentRound - adpRound;
+        
+        if (roundDiff >= 2) {
+          totalScore += 20;
+        } else if (roundDiff >= 1) {
+          totalScore += 15;
+        } else if (roundDiff === 0) {
+          totalScore += 10;
+        } else if (roundDiff >= -1) {
+          totalScore += 5;
+        }
+      }
+    }
+    
+    return Math.round(totalScore);
+  };
+
   // Filter out drafted players and sort by global rank
   const shortlistPlayers = useMemo(() => {
     if (!playerData.allPlayers || playerData.allPlayers.length === 0) {
@@ -109,9 +145,36 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
       )
     );
     
-    // Sort by global rank
-    return available.sort((a, b) => a.rank - b.rank);
-  }, [draftState.draftedPlayers, playerData.allPlayers]);
+    // Calculate position needs
+    const myPlayers = draftState.userTeam?.picks || [];
+    const positionCounts = { QB: 0, RB: 0, WR: 0, TE: 0, K: 0, D: 0 };
+    myPlayers.forEach(player => {
+      if (positionCounts.hasOwnProperty(player.position)) {
+        positionCounts[player.position]++;
+      }
+    });
+    
+    const positionNeeds = {
+      QB: Math.max(0, 1 - positionCounts.QB),
+      RB: Math.max(0, 2 - positionCounts.RB),
+      WR: Math.max(0, 2 - positionCounts.WR),
+      TE: Math.max(0, 1 - positionCounts.TE),
+      K: Math.max(0, 1 - positionCounts.K),
+      D: Math.max(0, 1 - positionCounts.D)
+    };
+    
+    // Calculate current round
+    const totalTeams = draftState.teams.length;
+    const currentRound = Math.ceil(draftState.currentPick / totalTeams);
+    
+    // Add scores to players and sort by score (highest first), then by rank
+    const playersWithScores = available.map(player => ({
+      ...player,
+      score: calculatePlayerScore(player, myPlayers, positionNeeds, currentRound)
+    }));
+    
+    return playersWithScores.sort((a, b) => a.rank - b.rank);
+  }, [draftState.draftedPlayers, playerData.allPlayers, draftState.userTeam, draftState.currentPick, draftState.teams.length]);
 
   // Calculate position rank for a player
   const getPositionRank = (player, availablePlayers) => {
@@ -201,7 +264,7 @@ const Shortlist = ({ draftState, currentLeague, playerData, onPlayerClick }) => 
                   className="player-info-compact"
                   style={{ color: getPositionColor(player.position) }}
                 >
-                  #{player.rank} {player.name} ({player.position}{positionRank})
+                  #{player.rank} {player.name} ({player.position}{positionRank}) [{player.score}]
                   {player.injury && <span style={{ color: '#e53e3e', marginLeft: '4px', fontWeight: 'bold' }}>I</span>}
                   {player.isRookie && <span style={{ color: '#805ad5', marginLeft: '4px', fontWeight: 'bold' }}>R</span>}
                   {likelyToBePicked && <span style={{ color: 'white', marginLeft: '4px' }}>•</span>}
