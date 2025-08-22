@@ -186,7 +186,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
   gap: 8px;
   padding: 8px 12px;
   background: var(--bg-tertiary);
@@ -199,7 +199,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
   gap: 8px;
   padding: 8px 12px;
   font-size: 0.8rem;
@@ -236,7 +236,8 @@
 .cell-rank,
 .cell-adp,
 .cell-proj,
-.cell-upside {
+.cell-upside,
+.cell-prev-pts {
   font-weight: 600;
   text-align: center;
   color: var(--text-secondary);

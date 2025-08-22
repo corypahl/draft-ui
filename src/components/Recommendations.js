@@ -55,6 +55,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
         const adp = playerData?.adp || 999;
         const projectedPoints = playerData?.projectedPoints || 0;
         const upside = playerData?.upside || 5; // Use actual upside value (1-10)
+        const prevPoints = playerData?.P_Pts || 0;
         
         return {
           ...player,
@@ -62,6 +63,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
           adp,
           projectedPoints,
           upside,
+          prevPoints,
           tier: playerData?.tier || 11
         };
       }).sort((a, b) => (a.rank || 999) - (b.rank || 999));
@@ -85,6 +87,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
       const byRank = [...availableWithData].sort((a, b) => (a.rank || 999) - (b.rank || 999));
       const byADP = [...availableWithData].sort((a, b) => (a.adp || 999) - (b.adp || 999));
       const byUpside = [...availableWithData].sort((a, b) => b.upside - a.upside);
+      const byPrevPoints = [...availableWithData].sort((a, b) => (b.P_Pts || 0) - (a.P_Pts || 0));
       
       positionalBreakdown[pos] = {
         drafted: draftedWithData,
@@ -92,6 +95,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
         byRank: byRank.slice(0, 3),
         byADP: byADP.slice(0, 3),
         byUpside: byUpside.slice(0, 3),
+        byPrevPoints: byPrevPoints.slice(0, 3),
         need: positionNeeds[pos] > 0,
         count: myPosPlayers.length
       };
@@ -291,6 +295,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                         <span className="header-adp">ADP</span>
                         <span className="header-proj">Proj</span>
                         <span className="header-upside">Upside</span>
+                        <span className="header-prev-pts">Prev Pts</span>
                       </div>
                       {data.drafted.map((player, index) => (
                         <div key={index} className="table-row drafted-row">
@@ -299,6 +304,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                           <span className="cell-adp">{player.adp}</span>
                           <span className="cell-proj">{player.projectedPoints}</span>
                           <span className="cell-upside">{player.upside}</span>
+                          <span className="cell-prev-pts">{player.prevPoints || 'N/A'}</span>
                         </div>
                       ))}
                     </div>
@@ -321,6 +327,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                           <span className="header-adp">ADP</span>
                           <span className="header-proj">Proj</span>
                           <span className="header-upside">Upside</span>
+                          <span className="header-prev-pts">Prev Pts</span>
                         </div>
                         {data.byRank.map((player, index) => (
                           <div 
@@ -334,6 +341,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                             <span className="cell-adp">{player.adp}</span>
                             <span className="cell-proj">{player.projectedPoints}</span>
                             <span className="cell-upside">{player.upside}</span>
+                            <span className="cell-prev-pts">{player.P_Pts || 'N/A'}</span>
                           </div>
                         ))}
                       </div>
@@ -349,6 +357,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                           <span className="header-adp">ADP</span>
                           <span className="header-proj">Proj</span>
                           <span className="header-upside">Upside</span>
+                          <span className="header-prev-pts">Prev Pts</span>
                         </div>
                         {data.byADP.map((player, index) => (
                           <div 
@@ -362,6 +371,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                             <span className="cell-adp">{player.adp}</span>
                             <span className="cell-proj">{player.projectedPoints}</span>
                             <span className="cell-upside">{player.upside}</span>
+                            <span className="cell-prev-pts">{player.P_Pts || 'N/A'}</span>
                           </div>
                         ))}
                       </div>
@@ -377,6 +387,7 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                           <span className="header-adp">ADP</span>
                           <span className="header-proj">Proj</span>
                           <span className="header-upside">Upside</span>
+                          <span className="header-prev-pts">Prev Pts</span>
                         </div>
                         {data.byUpside.map((player, index) => (
                           <div 
@@ -390,6 +401,35 @@ const Recommendations = ({ draftState, allPlayers, onPlayerClick }) => {
                             <span className="cell-adp">{player.adp}</span>
                             <span className="cell-proj">{player.projectedPoints}</span>
                             <span className="cell-upside">{player.upside}</span>
+                            <span className="cell-prev-pts">{player.P_Pts || 'N/A'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* By Previous Points */}
+                    <div className="table-group">
+                      <div className="table-title">By Previous Points</div>
+                      <div className="players-table">
+                        <div className="table-header">
+                          <span className="header-player">Player</span>
+                          <span className="header-rank">Rank</span>
+                          <span className="header-adp">ADP</span>
+                          <span className="header-proj">Proj</span>
+                          <span className="header-prev-pts">Prev Pts</span>
+                        </div>
+                        {data.byPrevPoints.map((player, index) => (
+                          <div 
+                            key={index} 
+                            className="table-row available-row"
+                            onClick={() => onPlayerClick && onPlayerClick(player)}
+                            style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
+                          >
+                            <span className="cell-player">{player.name}</span>
+                            <span className="cell-rank">{player.rank}</span>
+                            <span className="cell-adp">{player.adp}</span>
+                            <span className="cell-proj">{player.projectedPoints}</span>
+                            <span className="cell-prev-pts">{player.P_Pts || 'N/A'}</span>
                           </div>
                         ))}
                       </div>

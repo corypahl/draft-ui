@@ -32,7 +32,7 @@ const PlayerCard = ({ player, selectedPlayers, onRemove }) => {
     const values = selectedPlayers
       .map(p => {
         let val = p[field];
-        if (field === 'Prev_Rank' || field === 'Prev_Pts') {
+        if (field === 'P_Rank' || field === 'P_Pts') {
           val = p[field] || p[`${field}`];
         }
         return val;
@@ -121,11 +121,11 @@ const PlayerCard = ({ player, selectedPlayers, onRemove }) => {
   };
 
   const getPrevRankColor = (prevRank) => {
-    return getRelativeColor(prevRank, 'Prev_Rank', true); // Lower rank is better
+    return getRelativeColor(prevRank, 'P_Rank', true); // Lower rank is better
   };
 
   const getPrevPointsColor = (prevPoints) => {
-    return getRelativeColor(prevPoints, 'Prev_Pts', false); // Higher points is better
+    return getRelativeColor(prevPoints, 'P_Pts', false); // Higher points is better
   };
 
   const formatValue = (value) => {
@@ -183,8 +183,8 @@ const PlayerCard = ({ player, selectedPlayers, onRemove }) => {
         {/* History Section */}
         <div className="stats-section">
           <div className="section-title">History</div>
-          {renderStatRow('Prev Rank', player.Prev_Rank || player['Prev_Rank'], getPrevRankColor(player.Prev_Rank || player['Prev_Rank']))}
-          {renderStatRow('Prev Points', player.Prev_Pts || player['Prev_Pts'], getPrevPointsColor(player.Prev_Pts || player['Prev_Pts']))}
+          {renderStatRow('Prev Rank', player.P_Rank || player['P_Rank'], getPrevRankColor(player.P_Rank || player['P_Rank']))}
+          {renderStatRow('Prev Points', player.P_Pts || player['P_Pts'], getPrevPointsColor(player.P_Pts || player['P_Pts']))}
           {renderStatRow('Boom', player.boom, getBoomBustColor(player.boom))}
           {renderStatRow('Bust', player.bust, getBustColor(player.bust))}
         </div>
