@@ -19,9 +19,9 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
     }
   };
 
-  const [selectedLeague, setSelectedLeague] = useState('Jackson');
-  const [dataSource, setDataSource] = useState(leagueDefaults['Jackson'].dataSource);
-  const [draftId, setDraftId] = useState(leagueDefaults['Jackson'].draftId);
+  const [selectedLeague, setSelectedLeague] = useState('GVSU');
+  const [dataSource, setDataSource] = useState(leagueDefaults['GVSU'].dataSource);
+  const [draftId, setDraftId] = useState(leagueDefaults['GVSU'].draftId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -37,8 +37,8 @@ const LeagueSelector = ({ onLeagueChange, onDraftDataUpdate }) => {
 
   // Fetch draft data on initial load
   useEffect(() => {
-    // Automatically fetch draft data when component mounts with Jackson league defaults
-    const defaults = leagueDefaults['Jackson'];
+    // Automatically fetch draft data when component mounts with GVSU league defaults
+    const defaults = leagueDefaults['GVSU'];
     if (defaults) {
       console.log('LeagueSelector: Initial load - fetching data with params:', defaults.dataSource, defaults.draftId);
       fetchDraftDataWithParams(defaults.dataSource, defaults.draftId);
