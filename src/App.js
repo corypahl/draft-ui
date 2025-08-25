@@ -12,7 +12,7 @@ import Recommendations from './components/Recommendations';
 import { fetchPlayerData, processPlayerData } from './services/playerDataService';
 
 function App() {
-  const [currentLeague, setCurrentLeague] = useState('GVSU');
+  const [currentLeague, setCurrentLeague] = useState('FanDuel');
   const [draftState, setDraftState] = useState({
     currentPick: 1,
     teams: [],
